@@ -37,9 +37,10 @@ public enum GameState {
 	INIT,
 	MENU,
 	START, // preparing to play
-	PLAY,
-	PAUSE,
-	END,
+	PLAY_CLIMB,
+	END_CLIMB,
+	PLAY_EAT,
+	END_EAT,
 	LEADERBOARD,
 }
 

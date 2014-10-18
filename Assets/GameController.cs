@@ -12,6 +12,7 @@ public class GameController : MonoBehaviour {
 	public GameObject pausePopup;
 	public GameObject gameOverPopup;
 
+	private bool isPaused;
 	private GameState gameState;
 	private PlayerBehaviour playerBehaviour;
 	private float scrollDistance;
@@ -29,6 +30,7 @@ public class GameController : MonoBehaviour {
 		pausePopup.SetActive (false);
 		gameOverPopup.SetActive (false);
 		spawned = new List<GameObject> ();
+		isPaused = false;
 		gameState = GameState.INIT;
 		playerBehaviour = player.GetComponent<PlayerBehaviour> ();
 	}
@@ -39,21 +41,23 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void gameStart() {
-		gameState = GameState.PLAY;
+		gameState = GameState.PLAY_CLIMB;
 	}
 
 	private void gameWin() {
-		gameState = GameState.END;
+		gameState = GameState.END_CLIMB;
 		gameOverPopup.SetActive (true);
 	}
 
 	private void gameLose() {
-		gameState = GameState.END;
+		gameState = GameState.END_CLIMB;
 		gameOverPopup.SetActive (true);
 	}
 
 	private void gameUpdate() {
-		if (gameState == GameState.PLAY) {
+		if (isPaused) return;
+
+		if (gameState == GameState.PLAY_CLIMB) {
 			float distanceToScroll = Global.get ().scrollSpeedPerSecond * Time.deltaTime;
 			if (scrollDistance + distanceToScroll > Global.get ().gameDistance) {
 				distanceToScroll = Global.get ().gameDistance - scrollDistance;
@@ -67,18 +71,9 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	private void gamePause() {
-		if(gameState == GameState.PLAY) {
-			gameState = GameState.PAUSE;
-			pausePopup.SetActive (true);
-		}
-	}
-
-	private void gameUnpause() {
-		if (gameState == GameState.PAUSE) {
-			gameState = GameState.PLAY;
-			pausePopup.SetActive (false);
-		}
+	private void gameTogglePause() {
+		isPaused = !isPaused;
+		pausePopup.SetActive (isPaused);
 	}
 
 	private void gameReset() {
@@ -145,13 +140,13 @@ public class GameController : MonoBehaviour {
 
 	// Input events
 	void swipeLeft() {
-		if (gameState == GameState.PLAY && playerBehaviour.state == PlayerState.CLIMB) {
+		if (gameState == GameState.PLAY_CLIMB && playerBehaviour.state == PlayerState.CLIMB) {
 			changeLane (currLane - 1);
 		}
 	}
 	
 	void swipeRight() {
-		if (gameState == GameState.PLAY && playerBehaviour.state == PlayerState.CLIMB) {
+		if (gameState == GameState.PLAY_CLIMB && playerBehaviour.state == PlayerState.CLIMB) {
 			changeLane (currLane + 1);
 		}
 	}
@@ -160,18 +155,14 @@ public class GameController : MonoBehaviour {
 		if (gameState== GameState.INIT){
 			gameReset ();
 			gameStart ();
-		}else if (gameState == GameState.PAUSE) {
-			gameUnpause();
+		}else {
+			gameTogglePause();
 		}
 	}
 
 	// for debug
 	void tap3() {
-		if (gameState == GameState.PLAY) {
-			gamePause ();
-		}else if (gameState == GameState.PAUSE) {
-			gameUnpause();
-		}
+		gameTogglePause ();
 	}
 
 	// Game events
