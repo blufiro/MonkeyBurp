@@ -160,8 +160,8 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	// for debug
-	void tap3() {
+	// keyboard P
+	void debugTap() {
 		gameTogglePause ();
 	}
 

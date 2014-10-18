@@ -31,7 +31,7 @@ public class InputControlsBehaviour : MonoBehaviour {
 		} else if (Input.GetKeyDown (KeyCode.Space)) {
 			this.gameObject.SendMessage("tap");
 		} else if (Input.GetKeyDown (KeyCode.P)) {
-			this.gameObject.SendMessage("tap3");
+			this.gameObject.SendMessage("debugTap");
 		}
 
 		// mouse tap
