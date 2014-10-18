@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -33,6 +33,8 @@ public class GameController : MonoBehaviour {
 		isPaused = false;
 		gameState = GameState.INIT;
 		playerBehaviour = player.GetComponent<PlayerBehaviour> ();
+		// instantiate anim master singleton
+		AnimMaster.get();
 	}
 	
 	// Update is called once per frame
@@ -44,13 +46,22 @@ public class GameController : MonoBehaviour {
 		gameState = GameState.PLAY_CLIMB;
 	}
 
-	private void gameWin() {
+	private void gameClimbEnd() {
 		gameState = GameState.END_CLIMB;
-		gameOverPopup.SetActive (true);
+		// transition to EAT
+		AnimMaster.delay(this.gameObject, 0.25f).onComplete("gameInitEat");
 	}
 
-	private void gameLose() {
-		gameState = GameState.END_CLIMB;
+	private void gameInitEat() {
+		gameStartEat();
+	}
+
+	private void gameStartEat() {
+		gameState = GameState.PLAY_EAT;
+	}
+
+	private void gameOver() {
+		gameState = GameState.END_EAT;
 		gameOverPopup.SetActive (true);
 	}
 
@@ -66,9 +77,12 @@ public class GameController : MonoBehaviour {
 			float distanceLeft = Global.get ().gameDistance-scrollDistance;
 			distanceLeftText.text = "Distance Left: "+Mathf.FloorToInt(distanceLeft);
 			if(distanceLeft <= 0){
-				gameWin ();
+				gameClimbEnd();
 			}
 		}
+		
+		// update animations
+		AnimMaster.get().update();
 	}
 
 	private void gameTogglePause() {
@@ -139,18 +153,21 @@ public class GameController : MonoBehaviour {
 	}
 
 	// Input events
+	// keyboard shortcut: LEFT ARROW
 	void swipeLeft() {
 		if (gameState == GameState.PLAY_CLIMB && playerBehaviour.state == PlayerState.CLIMB) {
 			changeLane (currLane - 1);
 		}
 	}
-	
+
+	// keyboard shortcut: RIGHT ARROW
 	void swipeRight() {
 		if (gameState == GameState.PLAY_CLIMB && playerBehaviour.state == PlayerState.CLIMB) {
 			changeLane (currLane + 1);
 		}
 	}
-	
+
+	// keyboard shortcut: SPACE
 	void tap() {
 		if (gameState== GameState.INIT){
 			gameReset ();
@@ -160,7 +177,7 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	// keyboard P
+	// keyboard shortcut: P
 	void debugTap() {
 		gameTogglePause ();
 	}
