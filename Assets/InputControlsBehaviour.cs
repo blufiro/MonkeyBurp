@@ -79,7 +79,7 @@ public class InputControlsBehaviour : MonoBehaviour {
 			}
 		}
 		if (beganCount == 3) {
-			this.gameObject.SendMessage("tap3");
+			this.gameObject.SendMessage("debugTap");
 		}
 
 		/*
