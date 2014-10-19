@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class Global
 {
+	// climbing variables
 	public float scrollSpeedPerSecond = 5;
 	public float gameDistance = 20 * 2;
 	public float swipeDeltaSqMagnitude= 100*100;
@@ -12,6 +13,15 @@ public class Global
 	public float minTreeObjectDistance = 5;
 	public float maxTreeObjectDistance = 10;
 	public Dictionary<CollectableType, long> fruitPoints;
+	
+	// eating variables
+	public float gameEatDurationSeconds = 30;
+	public float nextEatMarkerSpawnSecondsMin = 0.2f;
+	public float nextEatMarkerSpawnSecondsMax = 0.8f;
+	public float respawnMarkerDelayMin = 0.25f;
+	public float respawnMarkerDelayMax = 0.75f;
+	public int markerGridDimX = 15;
+	public int markerGridDimY = 8;
 
 	public static GameController controller;
 

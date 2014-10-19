@@ -10,18 +10,18 @@ public class PlayerBehaviour : MonoBehaviour {
 	private float animTimeElapsed;
 
 	// Use this for initialization
-	void Start () {
+	void Start() {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update() {
 		switch (state) {
 		case PlayerState.NONE: break;
 		case PlayerState.CLIMB: break;
 		case PlayerState.MOVE:
 			{
 			animTimeElapsed += Time.deltaTime;
-			if (animTimeElapsed < Global.get ().playerMoveAnimSeconds) {
+			if (animTimeElapsed < Global.get().playerMoveAnimSeconds) {
 				setX(Easing.EaseInOutQuad(animTimeElapsed, originalX, changeX, Global.get().playerMoveAnimSeconds));
 			} else {
 				setX(originalX + changeX);
