@@ -6,7 +6,7 @@ public class GameController : MonoBehaviour {
 
 	public GameObject world;
 	public GameObject player;
-	public GameObject fruitPrefab;
+	public GameObject[] fruitPrefabs;
 	public GameObject snakePrefab;
 	public GameObject eatMarkerPrefab;
 	public GameObject[] trees;
@@ -146,18 +146,22 @@ public class GameController : MonoBehaviour {
 
 	private void spawnFruitsAndSnakes(Vector3 spawnBasePosition) {
 		float coveredDistance = 0;
-		while(coveredDistance+Global.get().minTreeObjectDistance < Global.get().gameDistance) {
-			float maxDistance = Global.get().maxTreeObjectDistance;
-			if(coveredDistance+maxDistance >= Global.get().gameDistance) {
-				maxDistance = Global.get().gameDistance - coveredDistance;
-			}
-			float objectDistance = coveredDistance + Random.Range (Global.get().minTreeObjectDistance, maxDistance);
-			GameObject template = (Random.value < 0.9) ? fruitPrefab : snakePrefab;
+		while(coveredDistance+Global.get().treeObjectDistance < Global.get().gameDistance) {
+			float objectDistance = coveredDistance + Global.get().treeObjectDistance;
+			GameObject template = getRandomTemplate();
 			GameObject spawnedObject =  (GameObject)Instantiate (template);
 			spawnedObject.transform.parent = world.transform;
 			spawnedObject.transform.position = spawnBasePosition + new Vector3 (0, objectDistance, 0);
 			spawned.Add(spawnedObject);
 			coveredDistance = objectDistance;
+		}
+	}
+	
+	private GameObject getRandomTemplate() {
+		if (Random.value < 0.9) {
+			return fruitPrefabs[(int)(Random.value * fruitPrefabs.Length)];
+		} else {
+			return snakePrefab;
 		}
 	}
 
