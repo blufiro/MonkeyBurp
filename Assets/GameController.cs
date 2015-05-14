@@ -24,6 +24,7 @@ public class GameController : MonoBehaviour {
 	private int currLane;
 	private TextMesh distanceLeftText;
 	private List<GameObject> spawned;
+	private FruitSlotQueue slotQueue;
 	
 	// Eating Game
 	private float eatTimeRemainingSeconds;
@@ -34,6 +35,7 @@ public class GameController : MonoBehaviour {
 		Global.controller = this;
 		distanceLeftText = GameObject.FindGameObjectWithTag ("DistanceText").GetComponent<TextMesh>();
 		scoreText = GameObject.FindGameObjectWithTag ("ScoreText").GetComponent<TextMesh>();
+		slotQueue = GameObject.FindGameObjectWithTag ("SlotQueue").GetComponent<FruitSlotQueue>();
 		pausePopup.SetActive (false);
 		gameOverPopup.SetActive (false);
 		spawned = new List<GameObject>();
@@ -129,7 +131,7 @@ public class GameController : MonoBehaviour {
 
 		// reset trees
 		foreach (GameObject tree in trees) {
-			tree.SendMessage ("reset");
+			tree.SendMessage ("onReset");
 		}
 
 		// spawn fruits in between trees
@@ -295,6 +297,7 @@ public class GameController : MonoBehaviour {
 	// Game events
 	public void gotFruit(FruitBehaviour fruit) {
 		addScore (Global.get().fruitPoints [fruit.type]);
+		
 		Destroy (fruit.gameObject);
 	}
 }

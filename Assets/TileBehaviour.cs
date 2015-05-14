@@ -24,10 +24,10 @@ public class TileBehaviour : MonoBehaviour {
 		tile2 = (GameObject)Instantiate (tile);
 		tile2.transform.parent = transform;
 		translate = new Vector3 (0, tileHeight, 0);
-		reset ();
+		onReset ();
 	}
 
-	public void reset() {
+	public void onReset() {
 		// top
 		top.transform.localPosition = originalPosition + new Vector3 (0, Global.get ().gameDistance, 0);
 

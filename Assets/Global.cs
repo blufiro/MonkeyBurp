@@ -12,6 +12,8 @@ public class Global
 	public float playerMoveAnimSeconds = 0.15f;
 	public float treeObjectDistance = 2;
 	public Dictionary<CollectableType, long> fruitPoints;
+	public int gameNumSlots = 5;
+	public int scoreBase = 500;
 	
 	// eating variables
 	public float gameEatDurationSeconds = 30;
@@ -30,9 +32,15 @@ public class Global
 	}
 
 	private Global(){
+		// TODO: make points based on combination
 		fruitPoints = new Dictionary<CollectableType, long>()
 		{
-			{ CollectableType.FRUIT, 10 },
+			{ CollectableType.FRUIT_BANANA, 1 },
+			{ CollectableType.FRUIT_CHERRY, 1 },
+			{ CollectableType.FRUIT_GRAPES, 1 },
+			{ CollectableType.FRUIT_ORANGE, 1 },
+			{ CollectableType.FRUIT_PEACH, 1 },
+			{ CollectableType.FRUIT_PUMPKIN, 1000 },
 		};
 	}
 }
@@ -54,7 +62,14 @@ public enum GameState {
 }
 
 public enum CollectableType {
-	FRUIT,
+	NONE,
+	FRUIT_BANANA,
+	FRUIT_CHERRY,
+	FRUIT_GRAPES,
+	FRUIT_ORANGE,
+	FRUIT_PEACH,
+	FRUIT_PUMPKIN,
+	
 }
 
 public enum PlayerState {
