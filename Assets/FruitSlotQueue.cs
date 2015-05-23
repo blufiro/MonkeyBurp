@@ -29,11 +29,16 @@ public class FruitSlotQueue : MonoBehaviour {
 			fruitUiTemplates.Add(entry.fruitType, entry.fruitUI);
 		}
 		fruitSlots = new GameObject[Global.get().gameMaxSlots];
-		for (int i=0; i<Global.get().gameMaxSlots; i++) {
+		for (int i=1; i<=Global.get().gameMaxSlots; i++) {
 			GameObject slot = GameObject.Find("FruitSlot" + i);
-			fruitSlots[i] = slot;
+			fruitSlots[i-1] = slot;
+		}
+		// Deactivate extra slots
+		for (int i = Global.get().gameNumSlots; i < Global.get().gameMaxSlots; i++) {
+			fruitSlots[i].SetActive(false);
 		}
 		doClear = false;
+		
 	}
 	
 	// Update is called once per frame
@@ -48,7 +53,7 @@ public class FruitSlotQueue : MonoBehaviour {
 		}
 		fruitTypes.Add(fruit.type);
 		int fruitIndex = fruitTypes.Count;
-		fruitUiGobs.Add(makeFruitUI(fruit.type, fruitIndex));
+		fruitUiGobs.Add(makeFruitUI(fruit.type, fruitIndex-1));
 		if (fruitIndex == Global.get().gameNumSlots) {
 			cashIn();
 			doClear = true;
