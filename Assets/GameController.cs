@@ -292,6 +292,7 @@ public class GameController : MonoBehaviour {
 
 	// Game events
 	public void gotFruit(FruitBehaviour fruit) {
+		slotQueue.addFruit(fruit);
 		Destroy (fruit.gameObject);
 	}
 	

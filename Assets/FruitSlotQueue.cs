@@ -11,11 +11,13 @@ public class FruitSlotQueue : MonoBehaviour {
 		public GameObject fruitUI;
 	}
 	
-	public FruitUiEntry[] fruitUiList;
+	public FruitUiEntry[] fruitUiTemplatesList;
 	
 	private Dictionary<CollectableType, GameObject> fruitUiTemplates;
 	private List<CollectableType> fruitTypes;
 	private List<GameObject> fruitUiGobs;
+	private GameObject[] fruitSlots;
+	private bool doClear;
 	//private List<CollectableType> cashedInTypes;
 
 	// Use this for initialization
@@ -23,9 +25,15 @@ public class FruitSlotQueue : MonoBehaviour {
 		fruitTypes = new List<CollectableType>();
 		fruitUiGobs = new List<GameObject>();
 		fruitUiTemplates = new Dictionary<CollectableType, GameObject>();
-		foreach (FruitUiEntry entry in fruitUiList) {
+		foreach (FruitUiEntry entry in fruitUiTemplatesList) {
 			fruitUiTemplates.Add(entry.fruitType, entry.fruitUI);
 		}
+		fruitSlots = new GameObject[Global.get().gameMaxSlots];
+		for (int i=0; i<Global.get().gameMaxSlots; i++) {
+			GameObject slot = GameObject.Find("FruitSlot" + i);
+			fruitSlots[i] = slot;
+		}
+		doClear = false;
 	}
 	
 	// Update is called once per frame
@@ -33,18 +41,24 @@ public class FruitSlotQueue : MonoBehaviour {
 	
 	}
 	
-	void addFruit(FruitBehaviour fruit) {
+	public void addFruit(FruitBehaviour fruit) {
+		if (doClear) {
+			// clear previous queue
+			clearQueue();
+		}
 		fruitTypes.Add(fruit.type);
 		int fruitIndex = fruitTypes.Count;
 		fruitUiGobs.Add(makeFruitUI(fruit.type, fruitIndex));
 		if (fruitIndex == Global.get().gameNumSlots) {
 			cashIn();
+			doClear = true;
 		}
 	}
 	
 	GameObject makeFruitUI(CollectableType fruitType, int fruitIndex) {
 		Debug.Log("make fruit UI");
-		Vector3 spawnPosition = new Vector3();
+		GameObject slot = fruitSlots[fruitIndex];
+		Vector3 spawnPosition = slot.transform.position;
 		GameObject newFruitUI = (GameObject) Instantiate(fruitUiTemplates[fruitType], spawnPosition, Quaternion.identity);
 		newFruitUI.transform.parent = this.transform;
 		return newFruitUI;
@@ -56,13 +70,16 @@ public class FruitSlotQueue : MonoBehaviour {
 		int total = Global.get().scoreBase * inARowMultiplier;
 		Global.controller.cashedIn(total);
 		Debug.Log("cashIn: " + total);
-		
+	}
+	
+	void clearQueue() {
 		// clear fruits
 		fruitTypes.Clear();
 		foreach (GameObject gob in fruitUiGobs) {
 			Destroy(gob);
 		}
 		fruitUiGobs.Clear();
+		doClear = false;
 	}
 	
 	/**
@@ -92,10 +109,5 @@ public class FruitSlotQueue : MonoBehaviour {
 		// singles and pairs do not count as in a row
 		int multiplier = (largestRun < 3) ? 1 : largestRun;
 		return multiplier;
-	}
-	
-	// temporary ui
-	void OnGUI() {
-		GUI.Box(new Rect(0,0,300, 100), "test");
 	}
 }

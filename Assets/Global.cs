@@ -13,6 +13,7 @@ public class Global
 	public float treeObjectDistance = 200;
 	public Dictionary<CollectableType, long> fruitPoints;
 	public int gameNumSlots = 5;
+	public int gameMaxSlots = 6;
 	public int scoreBase = 500;
 	
 	// eating variables
