@@ -296,8 +296,10 @@ public class GameController : MonoBehaviour {
 
 	// Game events
 	public void gotFruit(FruitBehaviour fruit) {
-		addScore (Global.get().fruitPoints [fruit.type]);
-		
 		Destroy (fruit.gameObject);
+	}
+	
+	public void cashedIn(int total) {
+		addScore(total);
 	}
 }

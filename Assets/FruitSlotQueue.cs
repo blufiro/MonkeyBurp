@@ -30,6 +30,7 @@ public class FruitSlotQueue : MonoBehaviour {
 		// score fruit combinations
 		int inARowMultiplier = comboInARowMultiplier(fruitTypes);
 		int total = Global.get().scoreBase * inARowMultiplier;
+		Global.controller.cashedIn(total);
 	}
 	
 	/**
