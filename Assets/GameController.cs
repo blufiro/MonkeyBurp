@@ -22,7 +22,6 @@ public class GameController : MonoBehaviour {
 	// Climbing Game
 	private float scrollDistance;
 	private int currLane;
-	private TextMesh distanceLeftText;
 	private List<GameObject> spawned;
 	private FruitSlotQueue slotQueue;
 	
@@ -33,7 +32,6 @@ public class GameController : MonoBehaviour {
 	// Use this for initialization
 	void Start() {
 		Global.controller = this;
-		distanceLeftText = GameObject.FindGameObjectWithTag ("DistanceText").GetComponent<TextMesh>();
 		scoreText = GameObject.FindGameObjectWithTag ("ScoreText").GetComponent<TextMesh>();
 		slotQueue = GameObject.FindGameObjectWithTag ("SlotQueue").GetComponent<FruitSlotQueue>();
 		pausePopup.SetActive (false);
@@ -88,7 +86,6 @@ public class GameController : MonoBehaviour {
 			}
 			updateScroll(scrollDistance + distanceToScroll);
 			float distanceLeft = Global.get().gameDistance-scrollDistance;
-			distanceLeftText.text = "Distance Left: "+Mathf.FloorToInt(distanceLeft);
 			if(distanceLeft <= 0){
 				gameClimbEnd();
 			}
@@ -100,7 +97,6 @@ public class GameController : MonoBehaviour {
 				eatTimeRemainingSeconds = 0;
 				gameOver();
 			}
-			distanceLeftText.text = "Time Left: "+eatTimeRemainingSeconds.ToString("F2");
 		}
 		
 		// update animations

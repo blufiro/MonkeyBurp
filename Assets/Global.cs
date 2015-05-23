@@ -5,12 +5,12 @@ using System.Collections.Generic;
 public class Global
 {
 	// climbing variables
-	public float scrollSpeedPerSecond = 2;
-	public float gameDistance = 20 * 2;
-	public float swipeDeltaSqMagnitude= 100*100;
-	public float swipeMinDistance = 100;
+	public float scrollSpeedPerSecond = 200;
+	public float gameDistance = 2000 * 2;
+	public float swipeDeltaSqMagnitude= 10000*10000;
+	public float swipeMinDistance = 10000;
 	public float playerMoveAnimSeconds = 0.15f;
-	public float treeObjectDistance = 2;
+	public float treeObjectDistance = 200;
 	public Dictionary<CollectableType, long> fruitPoints;
 	public int gameNumSlots = 5;
 	public int scoreBase = 500;
