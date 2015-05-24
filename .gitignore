@@ -15,4 +15,7 @@
 
 #Unity3D Generated File On Crash Reports
 sysinfo.txt
-Thumbs.db
+
+# Ignore Thumbs.db
+**/Thumbs.db
+**/Thumbs.db.meta
