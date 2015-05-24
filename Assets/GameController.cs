@@ -23,7 +23,7 @@ public class GameController : MonoBehaviour {
 	private float scrollDistance;
 	private float timeLeftSeconds;
 	private int currLane;
-	private List<GameObject> spawned;
+	private Pool fruitsAndSnakesPool;
 	private FruitSlotQueue slotQueue;
 	
 	// Eating Game
@@ -37,7 +37,7 @@ public class GameController : MonoBehaviour {
 		slotQueue = GameObject.FindGameObjectWithTag ("SlotQueue").GetComponent<FruitSlotQueue>();
 		pausePopup.SetActive (false);
 		gameOverPopup.SetActive (false);
-		spawned = new List<GameObject>();
+		fruitsAndSnakesPool = new Pool();
 		isPaused = false;
 		gameState = GameState.INIT;
 		playerBehaviour = player.GetComponent<PlayerBehaviour>();
@@ -112,10 +112,7 @@ public class GameController : MonoBehaviour {
 		addScore (-score);
 
 		// clear all spawned objects
-		foreach (GameObject gob in spawned) {
-			Destroy (gob);
-		}
-		spawned.Clear();
+		fruitsAndSnakesPool.clear();
 		
 		// clear eat markers
 		foreach (KeyValuePair<GameObject, Vector2> eatMarker in eatMarkers) {
@@ -144,20 +141,27 @@ public class GameController : MonoBehaviour {
 		float coveredDistance = 0;
 		while(coveredDistance+Global.get().treeObjectDistance < Global.get().initialSpawnDistance) {
 			float objectDistance = coveredDistance + Global.get().treeObjectDistance;
-			GameObject template = getRandomTemplate();
-			GameObject spawnedObject =  (GameObject)Instantiate (template);
+			GameObject spawnedObject = spawnRandomFruitOrSnake();
 			spawnedObject.transform.parent = world.transform;
 			spawnedObject.transform.position = spawnBasePosition + new Vector3 (0, objectDistance, 0);
-			spawned.Add(spawnedObject);
 			coveredDistance = objectDistance;
 		}
+		Debug.Log("spawned fruit count:" + fruitsAndSnakesPool.getUsedCount() + " of " + fruitsAndSnakesPool.getTotalCount());
 	}
 	
-	private GameObject getRandomTemplate() {
+	private GameObject spawnRandomFruitOrSnake() {
 		if (Random.value < 0.9) {
-			return fruitPrefabs[(int)(Random.value * fruitPrefabs.Length)];
+			GameObject template = fruitPrefabs[(int)(Random.value * fruitPrefabs.Length)];
+			GameObject spawnedObject =  (GameObject)Instantiate (template);
+			FruitBehaviour fruit = spawnedObject.GetComponent<FruitBehaviour>();
+			fruitsAndSnakesPool.addAndUse(fruit);
+			return spawnedObject;
 		} else {
-			return snakePrefab;
+			GameObject template = snakePrefab;
+			GameObject spawnedObject =  (GameObject)Instantiate (template);
+			SnakeBehaviour snake = spawnedObject.GetComponent<SnakeBehaviour>();
+			fruitsAndSnakesPool.addAndUse(snake);
+			return spawnedObject;
 		}
 	}
 
@@ -296,7 +300,7 @@ public class GameController : MonoBehaviour {
 	// Game events
 	public void gotFruit(FruitBehaviour fruit) {
 		slotQueue.addFruit(fruit);
-		Destroy (fruit.gameObject);
+		fruitsAndSnakesPool.returnToPool(fruit);
 	}
 	
 	public void cashedIn(int total) {

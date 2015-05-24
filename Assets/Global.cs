@@ -10,7 +10,7 @@ public class Global
 	public float swipeMinDistance = 10000;
 	public float playerMoveAnimSeconds = 0.15f;
 	public float treeObjectDistance = 170;
-	public float initialSpawnDistance = 540 * 10; // screens worth
+	public float initialSpawnDistance = 540 * 5; // 5 screens worth
 	public float roundDurationSeconds = 2 * 60;
 	public Dictionary<CollectableType, long> fruitPoints;
 	public int gameNumSlots = 5;
