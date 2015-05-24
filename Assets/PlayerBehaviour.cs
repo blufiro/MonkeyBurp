@@ -25,6 +25,7 @@ public class PlayerBehaviour : MonoBehaviour {
 				setX(Easing.EaseInOutQuad(animTimeElapsed, originalX, changeX, Global.get().playerMoveAnimSeconds));
 			} else {
 				setX(originalX + changeX);
+				this.gameObject.GetComponent<Animator>().SetInteger("MonkeyState", 0);
 				state = PlayerState.CLIMB;
 			}
 
@@ -48,6 +49,7 @@ public class PlayerBehaviour : MonoBehaviour {
 		originalX = transform.position.x;
 		changeX = x - originalX;
 		animTimeElapsed = 0;
+		this.gameObject.GetComponent<Animator>().SetInteger("MonkeyState", 1);
 		state = PlayerState.MOVE;
 	}
 }
