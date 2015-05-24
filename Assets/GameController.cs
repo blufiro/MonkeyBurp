@@ -21,6 +21,7 @@ public class GameController : MonoBehaviour {
 	
 	// Climbing Game
 	private float scrollDistance;
+	private float timeLeftSeconds;
 	private int currLane;
 	private List<GameObject> spawned;
 	private FruitSlotQueue slotQueue;
@@ -53,6 +54,7 @@ public class GameController : MonoBehaviour {
 
 	private void gameStart() {
 		gameState = GameState.PLAY_CLIMB;
+		timeLeftSeconds = Global.get().roundDurationSeconds;
 	}
 
 	private void gameClimbEnd() {
@@ -80,13 +82,9 @@ public class GameController : MonoBehaviour {
 
 	private void gameUpdate() {
 		if (gameState == GameState.PLAY_CLIMB) {
-			float distanceToScroll = Global.get().scrollSpeedPerSecond * Time.deltaTime;
-			if (scrollDistance + distanceToScroll > Global.get().gameDistance) {
-				distanceToScroll = Global.get().gameDistance - scrollDistance;
-			}
-			updateScroll(scrollDistance + distanceToScroll);
-			float distanceLeft = Global.get().gameDistance-scrollDistance;
-			if(distanceLeft <= 0){
+			updateScroll();
+			timeLeftSeconds -= Time.deltaTime;
+			if(timeLeftSeconds <= 0){
 				gameClimbEnd();
 			}
 		}
@@ -109,7 +107,7 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void gameReset() {
-		updateScroll (0);
+		setScroll (0);
 		changeLane (0);
 		addScore (-score);
 
@@ -144,7 +142,7 @@ public class GameController : MonoBehaviour {
 
 	private void spawnFruitsAndSnakes(Vector3 spawnBasePosition) {
 		float coveredDistance = 0;
-		while(coveredDistance+Global.get().treeObjectDistance < Global.get().gameDistance) {
+		while(coveredDistance+Global.get().treeObjectDistance < Global.get().initialSpawnDistance) {
 			float objectDistance = coveredDistance + Global.get().treeObjectDistance;
 			GameObject template = getRandomTemplate();
 			GameObject spawnedObject =  (GameObject)Instantiate (template);
@@ -163,8 +161,13 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	private void updateScroll(float scrollDist) {
-		scrollDistance = scrollDist;
+	private void updateScroll() {
+		float distanceToScroll = Global.get().scrollSpeedPerSecond * Time.deltaTime;
+		setScroll(scrollDistance + distanceToScroll);
+	}
+	
+	private void setScroll(float distanceFromStart) {
+		scrollDistance = distanceFromStart;
 		world.transform.position = new Vector3 (world.transform.localPosition.x, -scrollDistance, world.transform.localPosition.z);
 	}
 

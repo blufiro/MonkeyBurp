@@ -3,55 +3,62 @@ using System.Collections;
 
 public class TileBehaviour : MonoBehaviour {
 
-	// assumes is bottom aligned
-	public GameObject tile;
-	// assumes is top aligned
-	public GameObject top;
+	class TilePiece {
+		public GameObject tile;
+		public Vector3 initialLocalPosition;
+		
+		public TilePiece(GameObject tile) {
+			this.tile = tile;
+			this.initialLocalPosition = tile.transform.localPosition;
+		}
+		
+		public void reset() {
+			this.tile.transform.localPosition = this.initialLocalPosition;
+		}
+	}
 
-	private float tileHeight;
-	private GameObject tile2;
-	private Vector3 originalPosition;
-	private Vector3 translate;
-	private GameObject currAboveTile;
-	private GameObject currBelowTile;
-	private int numTilesToWrap;
-	private float offsetToTileToTop;
+	// assumes is bottom aligned
+	private GameObject tile;
+	private int targetTileHeight;
+	private int tileHeight;
+	private TilePiece[] tiles;
+	private Vector3 cachedTranslate;
 
 	// Use this for initialization
 	void Start () {
-		tileHeight = ((SpriteRenderer)tile.renderer).sprite.bounds.size.y;
-		originalPosition = tile.transform.localPosition;
-		tile2 = (GameObject)Instantiate (tile);
-		tile2.transform.parent = transform;
-		translate = new Vector3 (0, tileHeight, 0);
+		tile = this.transform.FindChild("tree_01").gameObject;
+		tileHeight = (int) ((SpriteRenderer)tile.renderer).sprite.bounds.size.y;
+		cachedTranslate = new Vector3 (0, tileHeight, 0);
+		targetTileHeight  = (int) (Camera.main.orthographicSize * 2);
+		
+		int repeat = Mathf.CeilToInt((float) targetTileHeight / tileHeight) + 1;
+		Debug.Log("repeat: " + repeat + " screen height: " + Screen.height + " tile height: " + tileHeight);
+		tiles = new TilePiece[repeat];
+		for (int y=0; y<repeat; y++) {
+			GameObject newTile = (GameObject)Instantiate (tile);
+			newTile.transform.parent = this.transform;
+			newTile.transform.localPosition = tile.transform.localPosition + (cachedTranslate * y);
+			tiles[y] = new TilePiece(newTile);
+		}
+		tile.SetActive(false);
 		onReset ();
 	}
 
 	public void onReset() {
-		// top
-		top.transform.localPosition = originalPosition + new Vector3 (0, Global.get ().gameDistance, 0);
+		Debug.Log ("tree reset! " + " h:" + tileHeight);
 
-		numTilesToWrap = Mathf.CeilToInt(Global.get().gameDistance/tileHeight);
-		offsetToTileToTop = numTilesToWrap * tileHeight - Global.get ().gameDistance;
-		Debug.Log ("tree reset! "+numTilesToWrap + " o:" + offsetToTileToTop + " h:" + tileHeight + " d:" + Global.get ().gameDistance);
-
-		// tiles
-		tile.transform.localPosition = originalPosition - new Vector3(0, offsetToTileToTop, 0);
-		tile2.transform.localPosition = tile.transform.localPosition + new Vector3 (0, tileHeight, 0);
-		currAboveTile = tile2;
-		currBelowTile = tile;
+		foreach (TilePiece tile in tiles) {
+			tile.reset();
+		}
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (currAboveTile.transform.position.y < -Camera.main.orthographicSize) {
-			if(numTilesToWrap > 0){
-				currBelowTile.transform.Translate(translate);
-				//swap
-				GameObject temp = currAboveTile;
-				currAboveTile = currBelowTile;
-				currBelowTile = temp;
-				numTilesToWrap--;
+		// The world position is moving, so we do not move individual tiles here.
+		// We only shift them when they go out of the camera, keeping all tiles in order.
+		if (tiles[0].tile.transform.position.y < -Camera.main.orthographicSize) {
+			foreach (TilePiece tilePiece in tiles) {
+				tilePiece.tile.transform.Translate(cachedTranslate);
 			}
 		}
 	}
