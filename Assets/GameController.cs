@@ -47,6 +47,7 @@ public class GameController : MonoBehaviour {
 		eatMarkers = new Dictionary<GameObject, Vector2>();
 		// instantiate anim master singleton
 		AnimMaster.get();
+		changeLane (Global.get().startingLane);
 	}
 	
 	// Update is called once per frame
@@ -92,7 +93,7 @@ public class GameController : MonoBehaviour {
 
 	private void gameReset() {
 		setScroll (0);
-		changeLane (0);
+		changeLane (Global.get().startingLane);
 		addScore (-score);
 
 		// clear all spawned objects
@@ -221,7 +222,6 @@ public class GameController : MonoBehaviour {
 			case GameState.INIT:
 			{
 				gameReset();
-				gameStart();
 				break;
 			}
 			default: break;

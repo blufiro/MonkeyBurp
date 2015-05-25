@@ -12,6 +12,7 @@ public class Global
 	public float treeObjectDistance = 170;
 	public int fruitAndSnakesPoolCount = 100;
 	public float roundDurationSeconds = 2 * 60;
+	public int startingLane = 2; // 0 to 4, start in middle
 	public Dictionary<CollectableType, long> fruitPoints;
 	public int gameNumSlots = 5;
 	public int gameMaxSlots = 6;
