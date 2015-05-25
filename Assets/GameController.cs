@@ -63,23 +63,12 @@ public class GameController : MonoBehaviour {
 	private void gameClimbEnd() {
 		gameState = GameState.END_CLIMB;
 		// transition to EAT
-		AnimMaster.delay(this.gameObject, 0.25f).onComplete("gameInitEat");
-	}
-
-	private void gameInitEat() {
-		// possible to get bonus for eating duration?
-		eatTimeRemainingSeconds = Global.get().gameEatDurationSeconds;
-		spawnEatMarkersIfNeeded();
-		gameStartEat();
-	}
-
-	private void gameStartEat() {
-		gameState = GameState.PLAY_EAT;
+		AnimMaster.delay(this.gameObject, 0.25f).onComplete("gameOver");
 	}
 
 	private void gameOver() {
 		Debug.Log("gameOver");
-		gameState = GameState.END_EAT;
+		gameState = GameState.GAME_OVER;
 		gameOverPopup.SetActive (true);
 	}
 
@@ -89,14 +78,6 @@ public class GameController : MonoBehaviour {
 			timeLeftSeconds -= Time.deltaTime;
 			if(timeLeftSeconds <= 0){
 				gameClimbEnd();
-			}
-		}
-		
-		if (gameState == GameState.PLAY_EAT) {
-			eatTimeRemainingSeconds -= Time.deltaTime;
-			if (eatTimeRemainingSeconds <= 0) {
-				eatTimeRemainingSeconds = 0;
-				gameOver();
 			}
 		}
 		
@@ -126,6 +107,11 @@ public class GameController : MonoBehaviour {
 		// reset trees
 		foreach (GameObject tree in trees) {
 			tree.SendMessage ("onReset");
+		}
+		
+		// reset spawn distances
+		for (int i=spawnedDistances.Length-1; i>=0; i--) {
+			spawnedDistances[i] = 0;
 		}
 
 		// spawn fruits in between trees
@@ -207,66 +193,10 @@ public class GameController : MonoBehaviour {
 		currLane = newLane;
 		playerBehaviour.move(trees [currLane].transform.position.x);
 	}
-	
-	private void spawnEatMarkersIfNeeded() {
-		// depending on markers left we spawn differently
-		int eatMarkersCount = eatMarkers.Count;
-		switch (eatMarkersCount) {
-			case 0: // no markers, spawn 3.
-			{
-				spawnEatMarker();
-				spawnEatMarker();
-				spawnEatMarker();
-				break;
-			}
-			case 1: // 1 marker, spawn 1 immediately
-			{
-				spawnEatMarker();
-				break;
-			}
-			case 2: // 2 markers, spawn 1 some time in future
-			{
-				AnimMaster.delay (this.gameObject, Random.Range(Global.get().nextEatMarkerSpawnSecondsMin, Global.get().nextEatMarkerSpawnSecondsMax))
-					.onComplete("spawnEatMarker");
-				break;
-			}
-			default: break;
-		}
-	}
-	
-	private void spawnEatMarker()  {
-		float x, y;
-		bool isCollided;
-		
-		do {
-			isCollided = false;
-			x = Random.Range (0, Global.get().markerGridDimX);
-			y = Random.Range (0, Global.get().markerGridDimY);
-			foreach (Vector2 eatMarkerGridCell in eatMarkers.Values) {
-				if (x == eatMarkerGridCell.x || y == eatMarkerGridCell.y) {
-					Debug.Log(x+","+y+" eatMarker:"+eatMarkerGridCell +" collided");
-					isCollided = true;
-				}
-			}
-		} while (isCollided);
-		
-		GameObject spawnedMarker = (GameObject) Instantiate(eatMarkerPrefab);
-		spawnedMarker.transform.parent = world.transform;
-		Vector3 spawnScreenPos = new Vector3(x * Screen.width/Global.get().markerGridDimX, y * Screen.height / Global.get().markerGridDimY);
-		Vector3 spawnWorldPos = Camera.main.ScreenToWorldPoint(spawnScreenPos);
-		spawnedMarker.transform.position = new Vector3(spawnWorldPos.x, spawnWorldPos.y, 0);
-		eatMarkers.Add(spawnedMarker, new Vector2(x,y));
-	}
 
 	private void addScore(long newScore) {
 		score += newScore;
 		scoreText.text = score.ToString();
-	}
-	
-	private Vector2 getGridCell(Vector2 screenPos) {
-		return new Vector2(
-			(int)(screenPos.x / Global.get().markerGridDimX),
-			(int)(screenPos.y / Global.get().markerGridDimY));
 	}
 
 	// Input events
@@ -292,24 +222,6 @@ public class GameController : MonoBehaviour {
 			{
 				gameReset();
 				gameStart();
-				break;
-			}
-			case GameState.PLAY_EAT:
-			{
-				Vector3 worldPos = Camera.main.ScreenToWorldPoint(tapPosition);
-				Collider2D collider = Physics2D.OverlapPoint(worldPos);
-				if (collider) {
-					Debug.Log("hit eatMarker");
-					// add score?
-					Destroy(collider.gameObject);
-					eatMarkers.Remove(collider.gameObject);
-					// after some delay, respawn next markers
-					AnimMaster
-						.delay (this.gameObject, Random.Range (
-							Global.get().respawnMarkerDelayMin,
-							Global.get().respawnMarkerDelayMax))
-							.onComplete("spawnEatMarkersIfNeeded");
-				}
 				break;
 			}
 			default: break;

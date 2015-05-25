@@ -16,15 +16,6 @@ public class Global
 	public int gameNumSlots = 5;
 	public int gameMaxSlots = 6;
 	public int scoreBase = 500;
-	
-	// eating variables
-	public float gameEatDurationSeconds = 30;
-	public float nextEatMarkerSpawnSecondsMin = 0.2f;
-	public float nextEatMarkerSpawnSecondsMax = 0.8f;
-	public float respawnMarkerDelayMin = 0.25f;
-	public float respawnMarkerDelayMax = 0.75f;
-	public int markerGridDimX = 15;
-	public int markerGridDimY = 8;
 
 	public static GameController controller;
 
@@ -62,8 +53,7 @@ public enum GameState {
 	START, // preparing to play
 	PLAY_CLIMB,
 	END_CLIMB,
-	PLAY_EAT,
-	END_EAT,
+	GAME_OVER,
 	LEADERBOARD,
 }
 
