@@ -29,7 +29,7 @@ public class TileBehaviour : MonoBehaviour {
 		tile = this.transform.FindChild("tree_01").gameObject;
 		tileHeight = (int) ((SpriteRenderer)tile.GetComponent<Renderer>()).sprite.bounds.size.y;
 		cachedTranslate = new Vector3 (0, tileHeight, 0);
-		targetTileHeight  = (int) (Camera.main.orthographicSize * 2);
+		targetTileHeight  = Global.get().getGameScreenHeight();
 		
 		int repeat = Mathf.CeilToInt((float) targetTileHeight / tileHeight) + 1;
 		Debug.Log("repeat: " + repeat + " screen height: " + Screen.height + " tile height: " + tileHeight);

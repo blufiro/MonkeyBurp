@@ -15,9 +15,12 @@ public class FruitBehaviour : MonoBehaviour, IPoolObject {
 	}
 
 	void OnTriggerEnter2D(Collider2D other) {
-		Debug.Log ("fruit colliding with "+other.gameObject.tag);
 		if (other.gameObject.tag == "Player") {
 			Global.controller.gotFruit(this);
+		} else if (other.gameObject.tag == "Respawn") {
+			Global.controller.returnFruit(this);
+		} else {
+			Debug.Log ("fruit colliding with "+other.gameObject.tag + " named: " + other.gameObject.name);
 		}
 	}
 	

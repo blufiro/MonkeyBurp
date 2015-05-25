@@ -10,7 +10,7 @@ public class Global
 	public float swipeMinDistance = 10000;
 	public float playerMoveAnimSeconds = 0.15f;
 	public float treeObjectDistance = 170;
-	public float initialSpawnDistance = 540 * 5; // 5 screens worth
+	public int fruitAndSnakesPoolCount = 100;
 	public float roundDurationSeconds = 2 * 60;
 	public Dictionary<CollectableType, long> fruitPoints;
 	public int gameNumSlots = 5;
@@ -44,6 +44,10 @@ public class Global
 			{ CollectableType.FRUIT_PEACH, 1 },
 			{ CollectableType.FRUIT_PUMPKIN, 1000 },
 		};
+	}
+	
+	public int getGameScreenHeight() {
+		return (int) (Camera.main.orthographicSize * 2);
 	}
 }
 

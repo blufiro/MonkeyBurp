@@ -37,7 +37,7 @@ public class PlayerBehaviour : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D other) {
-		Debug.Log ("player colliding with "+other.gameObject.tag);
+		Debug.Log ("player colliding with "+other.gameObject.tag + " named: " + other.gameObject.name);
 	}
 	
 	void setX(float x) {

@@ -13,15 +13,27 @@ public class SnakeBehaviour : MonoBehaviour, IPoolObject {
 	
 	}
 	
+	void OnTriggerEnter2D(Collider2D other) {
+		if (other.gameObject.tag == "Player") {
+			Global.controller.hitSnake(this);
+		} else if (other.gameObject.tag == "Respawn") {
+			Global.controller.returnSnake(this);
+		} else {
+			Debug.Log ("snake colliding with "+other.gameObject.tag + " named: " + other.gameObject.name);
+		}
+	}
+	
 	public void poolClear() {
 		Destroy(this.gameObject);
 	}
 	
 	public void poolUse() {
 		// init object if necessary
+		gameObject.SetActive(true);
 	}
 	
 	public void poolReturn() {
 		// reset object if necessary
+		gameObject.SetActive(false);
 	}
 }

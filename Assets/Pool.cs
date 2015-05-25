@@ -32,6 +32,7 @@ public class Pool
 		// if free == null, probably the object does not implement IPoolObject interface.
 		freeList.Add(free);
 		pool.Add(free, State.FREE);
+		free.poolReturn();
 	}
 	
 	public IPoolObject use() {
@@ -56,6 +57,22 @@ public class Pool
 		freeList.Add(toFree);
 		pool[toFree] = State.FREE;
 		toFree.poolReturn();
+	}
+	
+	public void shuffleFree(int minFree) {
+		if (getFreeCount() < minFree) {
+			throw new UnityException("Shuffle requires minimum of " + minFree + " but only has " + getFreeCount() + " free.");
+		}
+		int count = freeList.Count;
+		for (int i = count-1; i >= 0; i--) {
+			swapFree(i, (int) Random.Range(0, count));
+		}
+	}
+	
+	public void swapFree(int i, int j) {
+		IPoolObject a = freeList[i];
+		freeList[i] = freeList[j];
+		freeList[j] = a;
 	}
 	
 	public int getFreeCount() {
