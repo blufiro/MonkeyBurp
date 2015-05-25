@@ -95,6 +95,7 @@ public class GameController : MonoBehaviour {
 		setScroll (0);
 		changeLane (Global.get().startingLane);
 		addScore (-score);
+		showScore();
 
 		// clear all spawned objects
 		fruitsAndSnakesPool.clear();
@@ -197,7 +198,14 @@ public class GameController : MonoBehaviour {
 
 	private void addScore(long newScore) {
 		score += newScore;
+	}
+	
+	private void showScore() {
 		scoreText.text = score.ToString();
+	}
+	
+	private void showBonus(BonusType bonus) {
+		scoreText.text = bonus.ToString();
 	}
 
 	// Input events
@@ -254,7 +262,13 @@ public class GameController : MonoBehaviour {
 		spawnUntilScroll(true);
 	}
 	
-	public void cashedIn(int total) {
-		addScore(total);
+	public void cashedIn(int cashInScore, HashSet<BonusType> bonuses) {
+		addScore(cashInScore);
+		if (bonuses.Count > 0) {
+			HashSet<BonusType>.Enumerator bonusEnumerator = bonuses.GetEnumerator();
+			bonusEnumerator.MoveNext();
+			showBonus(bonusEnumerator.Current);
+			AnimMaster.delay(this.gameObject, 1f).onComplete("showScore");
+		}
 	}
 }

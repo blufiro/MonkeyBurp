@@ -74,3 +74,12 @@ public enum PlayerState {
 	CLIMB,
 	MOVE,
 }
+
+public enum BonusType {
+	NONE,
+	THREE_IN_A_ROW,
+	FOUR_IN_A_ROW,
+	FIVE_IN_A_ROW,
+	SIX_IN_A_ROW,
+	ALTERNATE,
+}

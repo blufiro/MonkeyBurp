@@ -61,7 +61,6 @@ public class FruitSlotQueue : MonoBehaviour {
 	}
 	
 	GameObject makeFruitUI(CollectableType fruitType, int fruitIndex) {
-		Debug.Log("make fruit UI");
 		GameObject slot = fruitSlots[fruitIndex];
 		Vector3 spawnPosition = slot.transform.position;
 		GameObject newFruitUI = (GameObject) Instantiate(fruitUiTemplates[fruitType], spawnPosition, Quaternion.identity);
@@ -71,9 +70,12 @@ public class FruitSlotQueue : MonoBehaviour {
 	
 	void cashIn() {
 		// score fruit combinations
-		int inARowMultiplier = comboInARowMultiplier(fruitTypes);
-		int total = Global.get().scoreBase * inARowMultiplier;
-		Global.controller.cashedIn(total);
+		BonusType inARow = comboInARow(fruitTypes);
+		BonusType alternate = comboAlternate(fruitTypes);
+		int total = Global.get().scoreBase
+			* getMultiplier(inARow)
+			* getMultiplier(alternate);
+		Global.controller.cashedIn(total, makeBonusSet(inARow, alternate));
 		Debug.Log("cashIn: " + total);
 	}
 	
@@ -87,10 +89,33 @@ public class FruitSlotQueue : MonoBehaviour {
 		doClear = false;
 	}
 	
+	private static HashSet<BonusType> makeBonusSet(params BonusType[] bonuses) {
+		HashSet<BonusType> bonusSet = new HashSet<BonusType>();
+		for (int i=0; i<bonuses.Length; i++){
+			BonusType bonus = bonuses[i];
+			if (bonus != BonusType.NONE) {
+				bonusSet.Add(bonus);
+			}
+		}
+		return bonusSet;
+	}
+	
+	private static int getMultiplier(BonusType bonusType) {
+		switch (bonusType) {
+			case BonusType.NONE: return 1;
+			case BonusType.THREE_IN_A_ROW: return 2;
+			case BonusType.FOUR_IN_A_ROW: return 7;
+			case BonusType.FIVE_IN_A_ROW: return 10;
+			case BonusType.SIX_IN_A_ROW: return 15;
+			case BonusType.ALTERNATE: return 5;
+		}
+		throw new UnityException("BonusType multiplier not implemented: " + bonusType);
+	}
+	
 	/**
 	 * Returns the largest number of the same type in a row.
 	 */
-	private static int comboInARowMultiplier(List<CollectableType> fruitTypes) {
+	private static BonusType comboInARow(List<CollectableType> fruitTypes) {
 		CollectableType current = CollectableType.NONE;
 		int previousLargestRun = 0;
 		int largestRun = 0;
@@ -112,7 +137,29 @@ public class FruitSlotQueue : MonoBehaviour {
 			largestRun = previousLargestRun;
 		}
 		// singles and pairs do not count as in a row
-		int multiplier = (largestRun < 3) ? 1 : largestRun;
-		return multiplier;
+		if (largestRun == 3) {
+			return BonusType.THREE_IN_A_ROW;
+		} else if (largestRun == 4) {
+			return BonusType.FOUR_IN_A_ROW;
+		} else if (largestRun == 5) {
+			return BonusType.FIVE_IN_A_ROW;
+		} else if (largestRun == 6) {
+			return BonusType.SIX_IN_A_ROW;
+		}
+		return BonusType.NONE;
+	}
+	
+	private static BonusType comboAlternate(List<CollectableType> fruitTypes) {
+		CollectableType firstType = fruitTypes[0];
+		bool isOdd = true;
+		foreach(CollectableType c in fruitTypes) {
+			if (isOdd && c != firstType) {
+				return BonusType.NONE;
+			} else if (!isOdd && c == firstType) {
+				return BonusType.NONE;
+			}
+			isOdd = !isOdd;
+		}
+		return BonusType.ALTERNATE;
 	}
 }
