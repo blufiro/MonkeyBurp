@@ -9,14 +9,35 @@ public class AnimMaster
 {
 	public List<Anim> anims;
 	
-	private static Anim createAnim(GameObject gob) {
-		Anim anim = new Anim(gob);
+	private static Anim createAnim(GameObject gob, string animKey) {
+		Anim anim = new Anim(gob, animKey);
 		get().anims.Add(anim);
 		return anim;
 	}
 	
-	public static Anim delay(GameObject gob, float delaySeconds) {
-		return createAnim(gob).delay(delaySeconds);
+	/// <summary>
+	/// Clears all animations with the given key.
+	/// </summary>
+	/// <param name="animKey">Animation key.</param>
+	public static void clearWithKey(string animKey) {
+		if (animKey != "") {
+			for (int i=get().anims.Count-1; i>=0; i--) {
+				Anim anim = get().anims[i];
+				if (anim.getKey() == animKey) {
+					get().anims.Remove(anim);
+				}
+			}
+		}
+	}
+	
+	/// <summary>
+	/// Create animation with a delay.
+	/// </summary>
+	/// <param name="animKey">Animation key. Animations the same key can be removed with clearWithKey method.</param>
+	/// <param name="gob">Game Object to target</param>
+	/// <param name="delaySeconds">Delay in seconds.</param>
+	public static Anim delay(string animKey, GameObject gob, float delaySeconds) {
+		return createAnim(gob, animKey).delay(delaySeconds);
 	}
 	
 	// Update the animations every frame

@@ -9,7 +9,8 @@ public class Anim
 	private string m_onComplete = null;
 	private object m_onCompleteParams = null;
 	private float m_delaySeconds = 0.0f;
-	private GameObject m_target;
+	private GameObject m_target = null;
+	private string m_key = "";
 	
 	public Anim delay(float delaySeconds) {
 		this.m_delaySeconds = delaySeconds;
@@ -25,10 +26,14 @@ public class Anim
 		return this;
 	}
 
+	/// <summary>
+	/// Elapse the animation time and play it. Do not call this manually.
+	/// </summary>
 	public void elapse(float elapsedSeconds) {
 		m_timeElapsedSeconds += elapsedSeconds;
 		if (isOver()) {
 			if (m_onComplete != null && m_target != null) {
+				Debug.Log("complete" + m_onCompleteParams);
 				m_target.SendMessage (m_onComplete, m_onCompleteParams, SendMessageOptions.RequireReceiver);
 			}
 		}
@@ -37,9 +42,21 @@ public class Anim
 	public bool isOver() {
 		return m_timeElapsedSeconds >= (m_delaySeconds + m_durationSeconds);
 	}
+	
+	public GameObject getTarget() {
+		return m_target;
+	}
+	
+	public string getKey() {
+		return m_key;
+	}
 
-	public Anim (GameObject target)
+	/// <summary>
+	/// Creates a new Anim object. Do not call this manually, use AnimMaster instead.
+	/// </summary>
+	public Anim (GameObject target, string key)
 	{
 		this.m_target = target;
+		this.m_key = key;
 	}
 }

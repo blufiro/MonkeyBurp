@@ -72,11 +72,12 @@ public class FruitSlotQueue : MonoBehaviour {
 		// score fruit combinations
 		BonusType inARow = comboInARow(fruitTypes);
 		BonusType alternate = comboAlternate(fruitTypes);
+		BonusType rainbow = comboRainbow(fruitTypes);
 		int total = Global.get().scoreBase
-			* getMultiplier(inARow)
-			* getMultiplier(alternate);
-		Global.controller.cashedIn(total, makeBonusSet(inARow, alternate));
-		Debug.Log("cashIn: " + total);
+			* Global.getMultiplier(inARow)
+			* Global.getMultiplier(alternate)
+			+ Global.getAddition(rainbow);
+		Global.controller.cashedIn(total, makeBonusSet(inARow, alternate, rainbow));
 	}
 	
 	void clearQueue() {
@@ -89,8 +90,8 @@ public class FruitSlotQueue : MonoBehaviour {
 		doClear = false;
 	}
 	
-	private static HashSet<BonusType> makeBonusSet(params BonusType[] bonuses) {
-		HashSet<BonusType> bonusSet = new HashSet<BonusType>();
+	private static List<BonusType> makeBonusSet(params BonusType[] bonuses) {
+		List<BonusType> bonusSet = new List<BonusType>();
 		for (int i=0; i<bonuses.Length; i++){
 			BonusType bonus = bonuses[i];
 			if (bonus != BonusType.NONE) {
@@ -98,18 +99,6 @@ public class FruitSlotQueue : MonoBehaviour {
 			}
 		}
 		return bonusSet;
-	}
-	
-	private static int getMultiplier(BonusType bonusType) {
-		switch (bonusType) {
-			case BonusType.NONE: return 1;
-			case BonusType.THREE_IN_A_ROW: return 2;
-			case BonusType.FOUR_IN_A_ROW: return 7;
-			case BonusType.FIVE_IN_A_ROW: return 10;
-			case BonusType.SIX_IN_A_ROW: return 15;
-			case BonusType.ALTERNATE: return 5;
-		}
-		throw new UnityException("BonusType multiplier not implemented: " + bonusType);
 	}
 	
 	/**
@@ -161,5 +150,17 @@ public class FruitSlotQueue : MonoBehaviour {
 			isOdd = !isOdd;
 		}
 		return BonusType.ALTERNATE;
+	}
+	
+	private static HashSet<CollectableType> rainbowSet = new HashSet<CollectableType>();
+	private static BonusType comboRainbow(List<CollectableType> fruitTypes) {
+		rainbowSet.Clear();
+		foreach(CollectableType c in fruitTypes) {
+			if (rainbowSet.Contains(c)) {
+				return BonusType.NONE;
+			}
+			rainbowSet.Add(c);
+		}
+		return BonusType.RAINBOW;
 	}
 }

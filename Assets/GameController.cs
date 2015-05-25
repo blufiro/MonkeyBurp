@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -64,7 +65,7 @@ public class GameController : MonoBehaviour {
 	private void gameClimbEnd() {
 		gameState = GameState.END_CLIMB;
 		// transition to EAT
-		AnimMaster.delay(this.gameObject, 0.25f).onComplete("gameOver");
+		AnimMaster.delay("", this.gameObject, 0.25f).onComplete("gameOver");
 	}
 
 	private void gameOver() {
@@ -161,8 +162,8 @@ public class GameController : MonoBehaviour {
 	}
 	
 	private GameObject spawnRandomFruitOrSnake() {
-		if (Random.value < 0.9) {
-			GameObject template = fruitPrefabs[(int)(Random.value * fruitPrefabs.Length)];
+		if (UnityEngine.Random.value < 0.9) {
+			GameObject template = fruitPrefabs[(int)(UnityEngine.Random.value * fruitPrefabs.Length)];
 			GameObject spawnedObject =  (GameObject)Instantiate (template);
 			FruitBehaviour fruit = spawnedObject.GetComponent<FruitBehaviour>();
 			fruitsAndSnakesPool.add(fruit);
@@ -205,6 +206,7 @@ public class GameController : MonoBehaviour {
 	}
 	
 	private void showBonus(BonusType bonus) {
+		Debug.Log("showBonus" + bonus);
 		scoreText.text = bonus.ToString();
 	}
 
@@ -262,13 +264,18 @@ public class GameController : MonoBehaviour {
 		spawnUntilScroll(true);
 	}
 	
-	public void cashedIn(int cashInScore, HashSet<BonusType> bonuses) {
+	public void cashedIn(int cashInScore, List<BonusType> bonuses) {
+		Debug.Log("cashIn: " + cashInScore);
 		addScore(cashInScore);
+		float delay = 0f;
+		AnimMaster.clearWithKey("score");
 		if (bonuses.Count > 0) {
-			HashSet<BonusType>.Enumerator bonusEnumerator = bonuses.GetEnumerator();
-			bonusEnumerator.MoveNext();
-			showBonus(bonusEnumerator.Current);
-			AnimMaster.delay(this.gameObject, 1f).onComplete("showScore");
+			foreach (BonusType bonus in bonuses) {
+				AnimMaster.delay("score", gameObject, delay).onComplete("showBonus").onCompleteParams(bonus);
+				delay += 1f;
+			}
 		}
+		AnimMaster.delay("score", gameObject, delay).onComplete("showScore");
+		Debug.Log("Bonuses: " + string.Join(",", Array.ConvertAll(bonuses.ToArray(), i => i.ToString())));
 	}
 }

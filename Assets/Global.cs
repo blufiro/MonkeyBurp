@@ -13,7 +13,6 @@ public class Global
 	public int fruitAndSnakesPoolCount = 100;
 	public float roundDurationSeconds = 2 * 60;
 	public int startingLane = 2; // 0 to 4, start in middle
-	public Dictionary<CollectableType, long> fruitPoints;
 	public int gameNumSlots = 5;
 	public int gameMaxSlots = 6;
 	public int scoreBase = 500;
@@ -26,20 +25,30 @@ public class Global
 	}
 
 	private Global(){
-		// TODO: make points based on combination
-		fruitPoints = new Dictionary<CollectableType, long>()
-		{
-			{ CollectableType.FRUIT_BANANA, 1 },
-			{ CollectableType.FRUIT_CHERRY, 1 },
-			{ CollectableType.FRUIT_GRAPES, 1 },
-			{ CollectableType.FRUIT_ORANGE, 1 },
-			{ CollectableType.FRUIT_PEACH, 1 },
-			{ CollectableType.FRUIT_PUMPKIN, 1000 },
-		};
 	}
 	
 	public int getGameScreenHeight() {
 		return (int) (Camera.main.orthographicSize * 2);
+	}
+	
+	public static int getMultiplier(BonusType bonusType) {
+		switch (bonusType) {
+			case BonusType.NONE: return 1;
+			case BonusType.THREE_IN_A_ROW: return 2;
+			case BonusType.FOUR_IN_A_ROW: return 7;
+			case BonusType.FIVE_IN_A_ROW: return 10;
+			case BonusType.SIX_IN_A_ROW: return 15;
+			case BonusType.ALTERNATE: return 5;
+		}
+		throw new UnityException("BonusType multiplier not implemented: " + bonusType);
+	}
+	
+	public static int getAddition(BonusType bonusType) {
+		switch (bonusType) {
+			case BonusType.NONE: return 0;
+			case BonusType.RAINBOW: return 1000;
+		}
+		throw new UnityException("BonusType addition not implemented: " + bonusType);
 	}
 }
 
@@ -82,4 +91,5 @@ public enum BonusType {
 	FIVE_IN_A_ROW,
 	SIX_IN_A_ROW,
 	ALTERNATE,
+	RAINBOW,
 }
