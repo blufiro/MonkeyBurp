@@ -8,7 +8,7 @@ public class Global
 	public float scrollSpeedPerSecond = 200;
 	public float swipeDeltaSqMagnitude= 10000*10000;
 	public float swipeMinDistance = 10000;
-	public float playerMoveAnimSeconds = 0.15f;
+	public float playerMoveAnimSeconds = 0.35f;
 	public float treeObjectDistance = 170;
 	public int fruitAndSnakesPoolCount = 100;
 	public float roundDurationSeconds = 2 * 60;
