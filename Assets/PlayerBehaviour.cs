@@ -18,15 +18,14 @@ public class PlayerBehaviour : MonoBehaviour {
 		switch (state) {
 		case PlayerState.NONE: break;
 		case PlayerState.CLIMB: break;
-		case PlayerState.MOVE:
+		case PlayerState.JUMP:
 			{
 			animTimeElapsed += Time.deltaTime;
 			if (animTimeElapsed < Global.get().playerMoveAnimSeconds) {
 				setX(Easing.EaseInOutQuad(animTimeElapsed, originalX, changeX, Global.get().playerMoveAnimSeconds));
 			} else {
 				setX(originalX + changeX);
-				this.gameObject.GetComponent<Animator>().SetInteger("MonkeyState", 0);
-				state = PlayerState.CLIMB;
+				updateState(PlayerState.CLIMB);
 			}
 
 			}break;
@@ -44,12 +43,22 @@ public class PlayerBehaviour : MonoBehaviour {
 		transform.position = new Vector3 (x, transform.position.y, transform.position.z);
 	}
 
-	public void move (float x)
+	public void jump (float x)
 	{
 		originalX = transform.position.x;
 		changeX = x - originalX;
 		animTimeElapsed = 0;
-		this.gameObject.GetComponent<Animator>().SetInteger("MonkeyState", 1);
-		state = PlayerState.MOVE;
+		if ((changeX < 0 && transform.localScale.x > 0)
+			|| (changeX > 0 && transform.localScale.x < 0)) {
+			Vector3 flipXScale = transform.localScale;
+			flipXScale.x *= -1;
+			transform.localScale = flipXScale;
+		}
+		updateState(PlayerState.JUMP);
+	}
+	
+	private void updateState(PlayerState newState) {
+		state = newState;
+		this.gameObject.GetComponent<Animator>().SetInteger("MonkeyState", (int) state);
 	}
 }

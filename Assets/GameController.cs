@@ -194,7 +194,7 @@ public class GameController : MonoBehaviour {
 			return;
 		}
 		currLane = newLane;
-		playerBehaviour.move(trees [currLane].transform.position.x);
+		playerBehaviour.jump(trees [currLane].transform.position.x);
 	}
 
 	private void addScore(long newScore) {
