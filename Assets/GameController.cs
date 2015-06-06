@@ -8,7 +8,7 @@ public class GameController : MonoBehaviour {
 	public GameObject world;
 	public GameObject player;
 	public GameObject[] fruitPrefabs;
-	public GameObject snakePrefab;
+	public GameObject[] rottenFruitPrefabs;
 	public GameObject eatMarkerPrefab;
 	public GameObject[] trees;
 	public GameObject pausePopup;
@@ -24,7 +24,7 @@ public class GameController : MonoBehaviour {
 	private float scrollDistance;
 	private float timeLeftSeconds;
 	private int currLane;
-	private Pool fruitsAndSnakesPool;
+	private Pool spawnedGobPool;
 	private FruitSlotQueue slotQueue;
 	private float[] spawnedDistances;
 	private int spawnNextIndex;
@@ -40,7 +40,7 @@ public class GameController : MonoBehaviour {
 		slotQueue = GameObject.FindGameObjectWithTag ("SlotQueue").GetComponent<FruitSlotQueue>();
 		pausePopup.SetActive (false);
 		gameOverPopup.SetActive (false);
-		fruitsAndSnakesPool = new Pool();
+		spawnedGobPool = new Pool();
 		spawnedDistances = new float[trees.Length-1];
 		isPaused = false;
 		gameState = GameState.INIT;
@@ -99,7 +99,7 @@ public class GameController : MonoBehaviour {
 		showScore();
 
 		// clear all spawned objects
-		fruitsAndSnakesPool.clear();
+		spawnedGobPool.clear();
 		
 		// clear eat markers
 		foreach (KeyValuePair<GameObject, Vector2> eatMarker in eatMarkers) {
@@ -118,11 +118,11 @@ public class GameController : MonoBehaviour {
 		}
 
 		// spawn fruits in between trees
-		for (int i=Global.get().fruitAndSnakesPoolCount; i>=0; i--) {
-			spawnRandomFruitOrSnake();
+		for (int i=Global.get().fruitAndRottenFruitPoolCount; i>=0; i--) {
+			spawnRandomFruitOrRottenFruit();
 		}
 		spawnUntilScroll(false);
-		Debug.Log("spawned " + fruitsAndSnakesPool.getUsedCount() + ", free " + fruitsAndSnakesPool.getFreeCount());
+		Debug.Log("spawned " + spawnedGobPool.getUsedCount() + ", free " + spawnedGobPool.getFreeCount());
 
 		gameOverPopup.SetActive (false);
 		gameStart();
@@ -144,36 +144,34 @@ public class GameController : MonoBehaviour {
 		int index = spawnNextIndex;
 		spawnNextIndex = (spawnNextIndex + 1) % spawnedDistances.Length;
 		if (shuffle) {
-			fruitsAndSnakesPool.shuffleFree(5);
+			spawnedGobPool.shuffleFree(5);
 		}
-		IPoolObject fruitOrSnake = fruitsAndSnakesPool.use();
+		IPoolObject spawnedGob = spawnedGobPool.use();
 		GameObject gob;
-		if (fruitOrSnake.GetType() == typeof(FruitBehaviour)) {
-			gob = ((FruitBehaviour)fruitOrSnake).gameObject;
-		} else if (fruitOrSnake.GetType() == typeof(SnakeBehaviour)) {
-			gob = ((SnakeBehaviour)fruitOrSnake).gameObject;
+		if (spawnedGob.GetType() == typeof(FruitBehaviour)) {
+			gob = ((FruitBehaviour)spawnedGob).gameObject;
 		} else {
-			throw new UnityException("fruitOrSnake is not a known type: " + fruitOrSnake.GetType());
+			throw new UnityException("spawnedGob is not a known type: " + spawnedGob.GetType());
 		}
 		float objectDistance = spawnedDistances[index] + Global.get().treeObjectDistance;
 		gob.transform.position = getSpawnBasePosition(index) + new Vector3 (0, objectDistance, 0);
 		spawnedDistances[index] = objectDistance;
-		//Debug.Log("spawned next object " + fruitOrSnake.GetType() + " at index: " + index + " with distance: " + objectDistance);
+		//Debug.Log("spawned next object " + spawnedGob.GetType() + " at index: " + index + " with distance: " + objectDistance);
 	}
 	
-	private GameObject spawnRandomFruitOrSnake() {
+	private GameObject spawnRandomFruitOrRottenFruit() {
 		if (UnityEngine.Random.value < 0.9) {
 			GameObject template = fruitPrefabs[(int)(UnityEngine.Random.value * fruitPrefabs.Length)];
 			GameObject spawnedObject =  (GameObject)Instantiate (template);
 			FruitBehaviour fruit = spawnedObject.GetComponent<FruitBehaviour>();
-			fruitsAndSnakesPool.add(fruit);
+			spawnedGobPool.add(fruit);
 			spawnedObject.transform.parent = world.transform;
 			return spawnedObject;
 		} else {
-			GameObject template = snakePrefab;
+			GameObject template = rottenFruitPrefabs[(int)(UnityEngine.Random.value * rottenFruitPrefabs.Length)];
 			GameObject spawnedObject =  (GameObject)Instantiate (template);
-			SnakeBehaviour snake = spawnedObject.GetComponent<SnakeBehaviour>();
-			fruitsAndSnakesPool.add(snake);
+			FruitBehaviour rottenFruit = spawnedObject.GetComponent<FruitBehaviour>();
+			spawnedGobPool.add(rottenFruit);
 			spawnedObject.transform.parent = world.transform;
 			return spawnedObject;
 		}
@@ -247,20 +245,11 @@ public class GameController : MonoBehaviour {
 	// Game events
 	public void gotFruit(FruitBehaviour fruit) {
 		slotQueue.addFruit(fruit);
-		fruitsAndSnakesPool.returnToPool(fruit);
-	}
-	
-	public void hitSnake(SnakeBehaviour snake) {
-		fruitsAndSnakesPool.returnToPool(snake);
+		spawnedGobPool.returnToPool(fruit);
 	}
 	
 	public void returnFruit(FruitBehaviour fruit) {
-		fruitsAndSnakesPool.returnToPool(fruit);
-		spawnUntilScroll(true);
-	}
-	
-	public void returnSnake(SnakeBehaviour snake) {
-		fruitsAndSnakesPool.returnToPool(snake);
+		spawnedGobPool.returnToPool(fruit);
 		spawnUntilScroll(true);
 	}
 	

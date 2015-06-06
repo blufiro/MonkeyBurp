@@ -109,6 +109,12 @@ public class FruitSlotQueue : MonoBehaviour {
 		int previousLargestRun = 0;
 		int largestRun = 0;
 		foreach (CollectableType c in fruitTypes) {
+			// Rotten fruits are ignored.
+			if (c >= CollectableType.FRUIT_BANANA_ROTTEN) {
+				current = CollectableType.NONE;
+				largestRun = 0;
+				continue;
+			}
 			if (current == CollectableType.NONE) { // first element
 				current = c;
 				largestRun++;
@@ -142,6 +148,10 @@ public class FruitSlotQueue : MonoBehaviour {
 		CollectableType firstType = fruitTypes[0];
 		bool isOdd = true;
 		foreach(CollectableType c in fruitTypes) {
+			// Rotten fruits are ignored.
+			if (c >= CollectableType.FRUIT_BANANA_ROTTEN) {
+				return BonusType.NONE;
+			}
 			if (isOdd && c != firstType) {
 				return BonusType.NONE;
 			} else if (!isOdd && c == firstType) {
@@ -156,6 +166,10 @@ public class FruitSlotQueue : MonoBehaviour {
 	private static BonusType comboRainbow(List<CollectableType> fruitTypes) {
 		rainbowSet.Clear();
 		foreach(CollectableType c in fruitTypes) {
+			// Rotten fruits are ignored.
+			if (c >= CollectableType.FRUIT_BANANA_ROTTEN) {
+				return BonusType.NONE;
+			}
 			if (rainbowSet.Contains(c)) {
 				return BonusType.NONE;
 			}
