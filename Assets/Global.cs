@@ -11,6 +11,8 @@ public class Global
 	public float playerMoveAnimSeconds = 0.2f;
 	public float treeObjectDistance = 170;
 	public int fruitAndRottenFruitPoolCount = 100;
+	public float fruitToRottenRatio = 0.9f;
+	public float enemySpawnDistance = 200;
 	public float roundDurationSeconds = 2 * 60;
 	public int startingLane = 2; // 0 to 4, start in middle
 	public int gameNumSlots = 5;

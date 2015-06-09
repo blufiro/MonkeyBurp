@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour {
 	public GameObject[] rottenFruitPrefabs;
 	public GameObject eatMarkerPrefab;
 	public GameObject[] trees;
+	public GameObject[] enemyPrefabs;
 	public GameObject pausePopup;
 	public GameObject gameOverPopup;
 
@@ -28,7 +29,8 @@ public class GameController : MonoBehaviour {
 	private FruitSlotQueue slotQueue;
 	private float[] spawnedDistances;
 	private int spawnNextIndex;
-	
+	private float nextEnemySpawnDistance;
+
 	// Eating Game
 	private float eatTimeRemainingSeconds;
 	private Dictionary<GameObject, Vector2> eatMarkers;
@@ -123,6 +125,9 @@ public class GameController : MonoBehaviour {
 		}
 		spawnUntilScroll(false);
 		Debug.Log("spawned " + spawnedGobPool.getUsedCount() + ", free " + spawnedGobPool.getFreeCount());
+		
+		// reset spawning distance
+		nextEnemySpawnDistance = Global.get().enemySpawnDistance;
 
 		gameOverPopup.SetActive (false);
 		gameStart();
@@ -160,26 +165,39 @@ public class GameController : MonoBehaviour {
 	}
 	
 	private GameObject spawnRandomFruitOrRottenFruit() {
-		if (UnityEngine.Random.value < 0.9) {
-			GameObject template = fruitPrefabs[(int)(UnityEngine.Random.value * fruitPrefabs.Length)];
-			GameObject spawnedObject =  (GameObject)Instantiate (template);
-			FruitBehaviour fruit = spawnedObject.GetComponent<FruitBehaviour>();
-			spawnedGobPool.add(fruit);
-			spawnedObject.transform.parent = world.transform;
-			return spawnedObject;
+		GameObject template;
+		if (UnityEngine.Random.value < Global.get().fruitToRottenRatio) {
+			template = fruitPrefabs[(int)(UnityEngine.Random.value * fruitPrefabs.Length)];
 		} else {
-			GameObject template = rottenFruitPrefabs[(int)(UnityEngine.Random.value * rottenFruitPrefabs.Length)];
-			GameObject spawnedObject =  (GameObject)Instantiate (template);
-			FruitBehaviour rottenFruit = spawnedObject.GetComponent<FruitBehaviour>();
-			spawnedGobPool.add(rottenFruit);
-			spawnedObject.transform.parent = world.transform;
-			return spawnedObject;
+			template = rottenFruitPrefabs[(int)(UnityEngine.Random.value * rottenFruitPrefabs.Length)];
 		}
+		GameObject spawnedObject =  (GameObject)Instantiate (template);
+		FruitBehaviour fruitBehaviour = spawnedObject.GetComponent<FruitBehaviour>();
+		spawnedGobPool.add(fruitBehaviour);
+		spawnedObject.transform.parent = world.transform;
+		return spawnedObject;
 	}
 
-	private void updateScroll() {
+	private GameObject spawnRandomEnemy() {
+		GameObject template;
+		template = enemyPrefabs[(int)(UnityEngine.Random.value * enemyPrefabs.Length)];
+		GameObject spawnedObject = (GameObject)Instantiate (template);
+		EnemyBehaviour enemyBehaviour = spawnedObject.GetComponent<EnemyBehaviour>();
+		spawnedObject.transform.parent = world.transform;
+		GameObject randomTree = trees[(int)(UnityEngine.Random.value * trees.Length)];
+		Vector3 pos = spawnedObject.transform.position;
+		pos.x = randomTree.transform.position.x;
+		spawnedObject.transform.position = pos;
+		return spawnedObject;
+	}
+
+	private void updateScroll() { 
 		float distanceToScroll = Global.get().scrollSpeedPerSecond * Time.deltaTime;
 		setScroll(scrollDistance + distanceToScroll);
+		if (scrollDistance > nextEnemySpawnDistance) {
+			spawnRandomEnemy();
+			nextEnemySpawnDistance += 200;
+		}
 	}
 	
 	private void setScroll(float distanceFromStart) {
