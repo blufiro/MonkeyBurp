@@ -3,6 +3,9 @@ using System.Collections;
 
 public class PlayerBehaviour : MonoBehaviour {
 
+	private static int BLINK_OFF = 0;
+	private static int BLINK_ON = 1;
+
 	public PlayerState state;
 
 	private float originalX;
@@ -60,5 +63,13 @@ public class PlayerBehaviour : MonoBehaviour {
 	private void updateState(PlayerState newState) {
 		state = newState;
 		this.gameObject.GetComponent<Animator>().SetInteger("MonkeyState", (int) state);
+	}
+
+	public void blinkEffect(){
+		this.gameObject.GetComponent<Animator> ().SetInteger ("MonkeyBlink", BLINK_ON);
+	}
+
+	public void offBlinkEffect() {
+		this.gameObject.GetComponent<Animator> ().SetInteger ("MonkeyBlink", BLINK_OFF);
 	}
 }

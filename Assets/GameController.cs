@@ -288,5 +288,7 @@ public class GameController : MonoBehaviour {
 
 	public void loseAllFruits() {
 		slotQueue.removeAllFruits ();
+		playerBehaviour.blinkEffect ();
+		AnimMaster.delay ("monkeyBlink", playerBehaviour.gameObject, Global.get ().playerBlinkDuration).onComplete ("offBlinkEffect");
 	}
 }

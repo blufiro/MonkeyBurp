@@ -9,6 +9,7 @@ public class Global
 	public float swipeDeltaSqMagnitude= 10000*10000;
 	public float swipeMinDistance = 10000;
 	public float playerMoveAnimSeconds = 0.2f;
+	public float playerBlinkDuration = 1.0f;
 	public float treeObjectDistance = 170;
 	public int fruitAndRottenFruitPoolCount = 100;
 	public float fruitToRottenRatio = 0.9f;
