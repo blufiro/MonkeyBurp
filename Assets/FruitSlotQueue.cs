@@ -59,6 +59,10 @@ public class FruitSlotQueue : MonoBehaviour {
 			doClear = true;
 		}
 	}
+
+	public void removeAllFruits(){
+		clearQueue ();
+	}
 	
 	GameObject makeFruitUI(CollectableType fruitType, int fruitIndex) {
 		GameObject slot = fruitSlots[fruitIndex];

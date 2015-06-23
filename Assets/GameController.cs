@@ -285,4 +285,8 @@ public class GameController : MonoBehaviour {
 		AnimMaster.delay("score", gameObject, delay).onComplete("showScore");
 		Debug.Log("Bonuses: " + string.Join(",", Array.ConvertAll(bonuses.ToArray(), i => i.ToString())));
 	}
+
+	public void loseAllFruits() {
+		slotQueue.removeAllFruits ();
+	}
 }
