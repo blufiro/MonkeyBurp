@@ -14,6 +14,7 @@ public class GameController : MonoBehaviour {
 	public GameObject[] enemyPrefabs;
 	public GameObject pausePopup;
 	public GameObject gameOverPopup;
+	public GameObject blindOverlay;
 
 	private bool isPaused;
 	private GameState gameState;
@@ -42,6 +43,8 @@ public class GameController : MonoBehaviour {
 		slotQueue = GameObject.FindGameObjectWithTag ("SlotQueue").GetComponent<FruitSlotQueue>();
 		pausePopup.SetActive (false);
 		gameOverPopup.SetActive (false);
+		blindOverlay.SetActive(false);
+		blindOverlay.GetComponent<SpriteRenderer>().enabled = true;
 		spawnedGobPool = new Pool();
 		spawnedDistances = new float[trees.Length-1];
 		isPaused = false;
@@ -182,7 +185,6 @@ public class GameController : MonoBehaviour {
 		GameObject template;
 		template = enemyPrefabs[(int)(UnityEngine.Random.value * enemyPrefabs.Length)];
 		GameObject spawnedObject = (GameObject)Instantiate (template);
-		EnemyBehaviour enemyBehaviour = spawnedObject.GetComponent<EnemyBehaviour>();
 		spawnedObject.transform.parent = world.transform;
 		GameObject randomTree = trees[(int)(UnityEngine.Random.value * trees.Length)];
 		Vector3 pos = spawnedObject.transform.position;
@@ -286,9 +288,29 @@ public class GameController : MonoBehaviour {
 		Debug.Log("Bonuses: " + string.Join(",", Array.ConvertAll(bonuses.ToArray(), i => i.ToString())));
 	}
 
-	public void loseAllFruits() {
-		slotQueue.removeAllFruits ();
+	public void playerBlink() {
 		playerBehaviour.blinkEffect ();
 		AnimMaster.delay ("monkeyBlink", playerBehaviour.gameObject, Global.get ().playerBlinkDuration).onComplete ("offBlinkEffect");
+	}
+	
+	public void loseAllFruits() {
+		slotQueue.removeAllFruits ();
+		playerBlink();
+	}
+	
+	public void blind() {
+		blindOverlay.SetActive(true);
+		AnimMaster.clearWithKey("blind");
+		AnimMaster.delay("blind", gameObject, Global.get().blindDurationSeconds).onComplete("blindOff");
+		playerBlink();
+	}
+	
+	public void blindOff() {
+		blindOverlay.SetActive(false);
+	}
+	
+	public void shuffleFruits() {
+		slotQueue.shuffleFruits ();
+		playerBlink();
 	}
 }

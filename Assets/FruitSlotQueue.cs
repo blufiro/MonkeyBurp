@@ -60,8 +60,24 @@ public class FruitSlotQueue : MonoBehaviour {
 		}
 	}
 
-	public void removeAllFruits(){
+	public void removeAllFruits() {
 		clearQueue ();
+	}
+	
+	public void shuffleFruits() {
+		int numFruits = fruitTypes.Count;
+		if (numFruits <= 1 || numFruits == Global.get().gameMaxSlots) {
+			return;
+		}
+		for (int i = 0; i < numFruits; i++) {
+			int j = (int)(Random.value * numFruits);
+			if (i != j) {
+				swap<CollectableType>(fruitTypes, i, j);
+				swap<GameObject>(fruitUiGobs, i, j);
+				updateFruitGobPosition(i);
+				updateFruitGobPosition(j);
+			}
+		}
 	}
 	
 	GameObject makeFruitUI(CollectableType fruitType, int fruitIndex) {
@@ -70,6 +86,10 @@ public class FruitSlotQueue : MonoBehaviour {
 		GameObject newFruitUI = (GameObject) Instantiate(fruitUiTemplates[fruitType], spawnPosition, Quaternion.identity);
 		newFruitUI.transform.parent = this.transform;
 		return newFruitUI;
+	}
+	
+	void updateFruitGobPosition(int i) {
+		fruitUiGobs[i].transform.position = fruitSlots[i].transform.position;
 	}
 	
 	void cashIn() {
@@ -180,5 +200,12 @@ public class FruitSlotQueue : MonoBehaviour {
 			rainbowSet.Add(c);
 		}
 		return BonusType.RAINBOW;
+	}
+
+	private static void swap<T>(List<T> list, int lhs, int rhs) {
+		T temp;
+		temp = list[lhs];
+		list[lhs] = list[rhs];
+		list[rhs] = temp;
 	}
 }

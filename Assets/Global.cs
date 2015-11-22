@@ -4,21 +4,28 @@ using System.Collections.Generic;
 
 public class Global
 {
-	// climbing variables
+	// climbing control variables
 	public float scrollSpeedPerSecond = 200;
 	public float swipeDeltaSqMagnitude= 10000*10000;
 	public float swipeMinDistance = 10000;
 	public float playerMoveAnimSeconds = 0.2f;
 	public float playerBlinkDuration = 1.0f;
+	
+	// init variables
 	public float treeObjectDistance = 170;
 	public int fruitAndRottenFruitPoolCount = 100;
-	public float fruitToRottenRatio = 0.9f;
-	public float enemySpawnDistance = 200;
+	public float fruitToRottenRatio = 0.95f;
 	public float roundDurationSeconds = 2 * 60;
 	public int startingLane = 2; // 0 to 4, start in middle
 	public int gameNumSlots = 5;
 	public int gameMaxSlots = 6;
 	public int scoreBase = 500;
+
+	// enemy variables
+	public float enemySpawnDistance = 200;
+	public float chickenFallSpeedPerSecond = 100;
+	public float blindDurationSeconds = 5;
+	
 
 	public static GameController controller;
 
