@@ -24,8 +24,8 @@ public class Global
 	public int collectFruitScore = 10;
 
 	// enemy variables
-	public float initialEnemySpawnDistance = 1000;
-	public float enemySpawnDistance = 500;
+	public float initialEnemySpawnDistance = 200;
+	public float enemySpawnDistance = 100;
 	public float chickenFallSpeedPerSecond = 100;
 	public float blindDurationSeconds = 5;
 	

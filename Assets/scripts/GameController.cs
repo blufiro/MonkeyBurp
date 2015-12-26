@@ -44,7 +44,7 @@ public class GameController : MonoBehaviour {
 		pausePopup.SetActive (false);
 		gameOverPopup.SetActive (false);
 		blindOverlay.SetActive(false);
-		blindOverlay.GetComponent<SpriteRenderer>().enabled = true;
+		blindOverlay.GetComponent<ParticleSystem> ().Stop ();
 		spawnedGobPool = new Pool();
 		spawnedDistances = new float[trees.Length-1];
 		isPaused = false;
@@ -302,6 +302,7 @@ public class GameController : MonoBehaviour {
 	
 	public void blind() {
 		blindOverlay.SetActive(true);
+		blindOverlay.GetComponent<ParticleSystem> ().Play ();
 		AnimMaster.clearWithKey("blind");
 		AnimMaster.delay("blind", gameObject, Global.get().blindDurationSeconds).onComplete("blindOff");
 		playerBlink();
