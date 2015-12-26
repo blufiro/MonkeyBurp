@@ -130,7 +130,7 @@ public class GameController : MonoBehaviour {
 		Debug.Log("spawned " + spawnedGobPool.getUsedCount() + ", free " + spawnedGobPool.getFreeCount());
 		
 		// reset spawning distance
-		nextEnemySpawnDistance = Global.get().enemySpawnDistance;
+		nextEnemySpawnDistance = Global.get().initialEnemySpawnDistance;
 
 		gameOverPopup.SetActive (false);
 		gameStart();
@@ -161,7 +161,7 @@ public class GameController : MonoBehaviour {
 		} else {
 			throw new UnityException("spawnedGob is not a known type: " + spawnedGob.GetType());
 		}
-		float objectDistance = spawnedDistances[index] + Global.get().treeObjectDistance;
+		float objectDistance = spawnedDistances[index] + Global.get().treeObjectDistance + UnityEngine.Random.value * Global.get ().treeObjectDistanceRange;
 		gob.transform.position = getSpawnBasePosition(index) + new Vector3 (0, objectDistance, 0);
 		spawnedDistances[index] = objectDistance;
 		//Debug.Log("spawned next object " + spawnedGob.GetType() + " at index: " + index + " with distance: " + objectDistance);
@@ -198,7 +198,7 @@ public class GameController : MonoBehaviour {
 		setScroll(scrollDistance + distanceToScroll);
 		if (scrollDistance > nextEnemySpawnDistance) {
 			spawnRandomEnemy();
-			nextEnemySpawnDistance += 200;
+			nextEnemySpawnDistance += Global.get ().enemySpawnDistance;
 		}
 	}
 	
@@ -266,6 +266,8 @@ public class GameController : MonoBehaviour {
 	public void gotFruit(FruitBehaviour fruit) {
 		slotQueue.addFruit(fruit);
 		spawnedGobPool.returnToPool(fruit);
+		addScore (Global.get ().collectFruitScore);
+		showScore();
 	}
 	
 	public void returnFruit(FruitBehaviour fruit) {
