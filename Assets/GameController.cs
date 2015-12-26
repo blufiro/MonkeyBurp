@@ -161,7 +161,7 @@ public class GameController : MonoBehaviour {
 		} else {
 			throw new UnityException("spawnedGob is not a known type: " + spawnedGob.GetType());
 		}
-		float objectDistance = spawnedDistances[index] + Global.get().treeObjectDistance + UnityEngine.Random.value * Global.get ().treeObjectDistanceRange;
+		float objectDistance = spawnedDistances[index] + Global.get().treeObjectDistance + (UnityEngine.Random.value - 0.5f) * Global.get ().treeObjectDistanceRange;
 		gob.transform.position = getSpawnBasePosition(index) + new Vector3 (0, objectDistance, 0);
 		spawnedDistances[index] = objectDistance;
 		//Debug.Log("spawned next object " + spawnedGob.GetType() + " at index: " + index + " with distance: " + objectDistance);

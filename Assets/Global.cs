@@ -5,14 +5,14 @@ using System.Collections.Generic;
 public class Global
 {
 	// climbing control variables
-	public float scrollSpeedPerSecond = 100;
+	public float scrollSpeedPerSecond = 120;
 	public float swipeDeltaSqMagnitude= 10000*10000;
 	public float swipeMinDistance = 10000;
 	public float playerMoveAnimSeconds = 0.2f;
 	public float playerBlinkDuration = 1.0f;
 	
 	// init variables
-	public float treeObjectDistance = 100;
+	public float treeObjectDistance = 120;
 	public float treeObjectDistanceRange = 50;
 	public int fruitAndRottenFruitPoolCount = 100;
 	public float fruitToRottenRatio = 0.95f;
