@@ -32,6 +32,9 @@ public class FruitSlotQueue : MonoBehaviour {
 		fruitSlots = new GameObject[Global.get().gameMaxSlots];
 		for (int i=1; i<=Global.get().gameMaxSlots; i++) {
 			GameObject slot = GameObject.Find("FruitSlot" + i);
+			if (slot == null) {
+				throw new UnityException("Unable to find FruitSlot"+i);
+			}
 			fruitSlots[i-1] = slot;
 		}
 		slotWidth = fruitSlots[0].GetComponent<SpriteRenderer>().sprite.texture.width;
@@ -56,6 +59,7 @@ public class FruitSlotQueue : MonoBehaviour {
 		
 		// Deactivate extra slots
 		for (int i = Global.get().gameNumSlots; i < Global.get().gameMaxSlots; i++) {
+		Debug.Log("iii"+i +" a"+fruitSlots[i]);
 			fruitSlots[i].SetActive(false);
 		}
 		doClear = false;
