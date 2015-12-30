@@ -31,6 +31,8 @@ public class GameController : MonoBehaviour {
 	private float[] spawnedDistances;
 	private int spawnNextIndex;
 	private float nextEnemySpawnDistance;
+	private long scoreAnimCurrent;
+	private long scoreAnimTarget;
 
 	// Eating Game
 	private float eatTimeRemainingSeconds;
@@ -86,6 +88,7 @@ public class GameController : MonoBehaviour {
 			if(timeLeftSeconds <= 0){
 				gameClimbEnd();
 			}
+			updateScoreRoll();
 		}
 		
 		// update animations
@@ -100,8 +103,7 @@ public class GameController : MonoBehaviour {
 	private void gameReset() {
 		setScroll (0);
 		changeLane (Global.get().startingLane);
-		addScore (-score);
-		showScore();
+		resetScore();
 
 		// clear all spawned objects
 		spawnedGobPool.clear();
@@ -221,8 +223,31 @@ public class GameController : MonoBehaviour {
 		score += newScore;
 	}
 	
-	private void showScore() {
+	private void resetScore() {
+		score = 0;
+		showScoreImmediate();
+	}
+	
+	private void showScoreImmediate() {
+		scoreAnimCurrent = score;
+		scoreAnimTarget = score;
 		scoreText.text = score.ToString();
+	}
+
+	private void showScoreAnimated() {
+		scoreAnimTarget = score;
+		// animation of score will take place in updateScoreRoll()
+	}
+	
+	private void updateScoreRoll() {
+		if (scoreAnimCurrent == scoreAnimTarget) {
+			return;
+		}
+		scoreAnimCurrent += Global.get().scoreRollRate;
+		if (scoreAnimCurrent > scoreAnimTarget) {
+			scoreAnimCurrent = scoreAnimTarget;
+		}
+		scoreText.text = scoreAnimCurrent.ToString();
 	}
 	
 	private void showBonus(BonusType bonus) {
@@ -269,7 +294,7 @@ public class GameController : MonoBehaviour {
 		slotQueue.addFruit(fruit);
 		spawnedGobPool.returnToPool(fruit);
 		addScore (Global.get ().collectFruitScore);
-		showScore();
+		showScoreAnimated();
 	}
 	
 	public void returnFruit(FruitBehaviour fruit) {
@@ -288,7 +313,7 @@ public class GameController : MonoBehaviour {
 				delay += 1f;
 			}
 		}
-		AnimMaster.delay("score", gameObject, delay).onComplete("showScore");
+		AnimMaster.delay("score", gameObject, delay).onComplete("showScoreImmediate");
 		Debug.Log("Bonuses: " + string.Join(",", Array.ConvertAll(bonuses.ToArray(), i => i.ToString())));
 	}
 

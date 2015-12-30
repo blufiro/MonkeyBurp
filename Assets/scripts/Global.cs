@@ -22,6 +22,7 @@ public class Global
 	public int gameMaxSlots = 6;
 	public int scoreBase = 500;
 	public int collectFruitScore = 10;
+	public int scoreRollRate = 2;
 
 	// enemy variables
 	public float initialEnemySpawnDistance = 1000;
