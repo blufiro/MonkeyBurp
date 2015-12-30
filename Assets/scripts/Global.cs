@@ -26,6 +26,7 @@ public class Global
 	// enemy variables
 	public float initialEnemySpawnDistance = 1000;
 	public float enemySpawnDistance = 3000;
+	public float enemySpawnYAboveScreen = 200;
 	public float chickenFallSpeedPerSecond = 100;
 	public float blindDurationSeconds = 5;
 	
@@ -40,8 +41,13 @@ public class Global
 	private Global(){
 	}
 	
+	public float getGameScreenHalfHeight() {
+		// orthographicSize is half of screen height. screen width is based on aspect ratio.
+		return Camera.main.orthographicSize;
+	}
+	
 	public int getGameScreenHeight() {
-		return (int) (Camera.main.orthographicSize * 2);
+		return (int) (getGameScreenHalfHeight() * 2);
 	}
 	
 	public static int getMultiplier(BonusType bonusType) {

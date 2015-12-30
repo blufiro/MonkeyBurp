@@ -189,6 +189,7 @@ public class GameController : MonoBehaviour {
 		GameObject randomTree = trees[(int)(UnityEngine.Random.value * trees.Length)];
 		Vector3 pos = spawnedObject.transform.position;
 		pos.x = randomTree.transform.position.x;
+		pos.y = Global.get().getGameScreenHalfHeight() + Global.get().enemySpawnYAboveScreen;
 		spawnedObject.transform.position = pos;
 		return spawnedObject;
 	}
@@ -204,7 +205,8 @@ public class GameController : MonoBehaviour {
 	
 	private void setScroll(float distanceFromStart) {
 		scrollDistance = distanceFromStart;
-		world.transform.position = new Vector3 (world.transform.localPosition.x, -scrollDistance, world.transform.localPosition.z);
+		float offsetWorldY = -Global.get().getGameScreenHalfHeight();
+		world.transform.position = new Vector3 (world.transform.localPosition.x, offsetWorldY - scrollDistance, world.transform.localPosition.z);
 	}
 
 	private void changeLane(int newLane) {
