@@ -17,6 +17,7 @@ public class FruitSlotQueue : MonoBehaviour {
 	private List<CollectableType> fruitTypes;
 	private List<GameObject> fruitUiGobs;
 	private GameObject[] fruitSlots;
+	private int slotWidth;
 	private bool doClear;
 	//private List<CollectableType> cashedInTypes;
 
@@ -33,12 +34,39 @@ public class FruitSlotQueue : MonoBehaviour {
 			GameObject slot = GameObject.Find("FruitSlot" + i);
 			fruitSlots[i-1] = slot;
 		}
+		slotWidth = fruitSlots[0].GetComponent<SpriteRenderer>().sprite.texture.width;
+		// Arrange active slots
+		if (Global.get().gameNumSlots % 2 == 0) {
+			throw new UnityException("Even number of initial fruit slots not implemented");
+		}
+		int mid = Global.get().gameNumSlots / 2;
+		int left = mid - 1;
+		int right = mid + 1;
+		float currX = 0;
+		initFruitSlotPosition(mid, currX);
+		for (int i=left; i>= 0; i--) {
+			currX -= slotWidth;
+			initFruitSlotPosition(i, currX);
+		}
+		currX = 0;
+		for (int i=right; i<Global.get().gameNumSlots; i++) {
+			currX += slotWidth;
+			initFruitSlotPosition(i, currX);
+		}
+		
 		// Deactivate extra slots
 		for (int i = Global.get().gameNumSlots; i < Global.get().gameMaxSlots; i++) {
 			fruitSlots[i].SetActive(false);
 		}
 		doClear = false;
 		
+	}
+	
+	private void initFruitSlotPosition(int index, float x) {
+		fruitSlots[index].SetActive(true);
+		Vector3 newPosition = fruitSlots[index].transform.position;
+		newPosition.x = x;
+		fruitSlots[index].transform.position = newPosition;
 	}
 	
 	// Update is called once per frame
