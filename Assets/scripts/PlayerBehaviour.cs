@@ -14,12 +14,13 @@ public class PlayerBehaviour : MonoBehaviour {
 
 	// Use this for initialization
 	void Start() {
+		updateState(PlayerState.IDLE);
 	}
 	
 	// Update is called once per frame
 	void Update() {
 		switch (state) {
-		case PlayerState.NONE: break;
+		case PlayerState.IDLE: break;
 		case PlayerState.CLIMB: break;
 		case PlayerState.JUMP:
 			{
@@ -41,11 +42,19 @@ public class PlayerBehaviour : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D other) {
 		Debug.Log ("player colliding with "+other.gameObject.tag + " named: " + other.gameObject.name);
 	}
-	
-	void setX(float x) {
-		transform.position = new Vector3 (x, transform.position.y, transform.position.z);
+
+	public void reset(float x) {
+		setX(x);
 	}
 
+	public void beginClimb() {
+		updateState(PlayerState.CLIMB);
+	}
+
+	public void endClimb() {
+		updateState(PlayerState.IDLE);
+	}
+	
 	public void jump (float x)
 	{
 		originalX = transform.position.x;
@@ -60,6 +69,10 @@ public class PlayerBehaviour : MonoBehaviour {
 		updateState(PlayerState.JUMP);
 	}
 	
+	private void setX(float x) {
+		transform.position = new Vector3 (x, transform.position.y, transform.position.z);
+	}
+
 	private void updateState(PlayerState newState) {
 		state = newState;
 		this.gameObject.GetComponent<Animator>().SetInteger("MonkeyState", (int) state);

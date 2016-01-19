@@ -16,7 +16,7 @@ public class Global
 	public float treeObjectDistanceRange = 300;
 	public int fruitAndRottenFruitPoolCount = 100;
 	public float fruitToRottenRatio = 0.95f;
-	public float roundDurationSeconds = 2 * 60;
+	public float roundDurationSeconds = 10;//2 * 60;
 	public int startingLane = 1; // 0 to 4, start in middle
 	public int gameNumSlots = 3;
 	public int gameMaxSlots = 6;
@@ -103,7 +103,7 @@ public enum CollectableType {
 }
 
 public enum PlayerState {
-	NONE = 0,
+	IDLE = 0,
 	CLIMB = 1,
 	JUMP = 2,
 }

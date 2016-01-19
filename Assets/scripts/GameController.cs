@@ -55,7 +55,7 @@ public class GameController : MonoBehaviour {
 		eatMarkers = new Dictionary<GameObject, Vector2>();
 		// instantiate anim master singleton
 		AnimMaster.get();
-		changeLane (Global.get().startingLane);
+		changeLane (Global.get().startingLane, true);
 	}
 	
 	// Update is called once per frame
@@ -67,10 +67,12 @@ public class GameController : MonoBehaviour {
 	private void gameStart() {
 		gameState = GameState.PLAY_CLIMB;
 		timeLeftSeconds = Global.get().roundDurationSeconds;
+		playerBehaviour.beginClimb();
 	}
 
 	private void gameClimbEnd() {
 		gameState = GameState.END_CLIMB;
+		playerBehaviour.endClimb();
 		// transition to EAT
 		AnimMaster.delay("", this.gameObject, 0.25f).onComplete("gameOver");
 	}
@@ -102,7 +104,7 @@ public class GameController : MonoBehaviour {
 
 	private void gameReset() {
 		setScroll (0);
-		changeLane (Global.get().startingLane);
+		changeLane (Global.get().startingLane, true);
 		resetScore();
 
 		// clear all spawned objects
@@ -211,12 +213,16 @@ public class GameController : MonoBehaviour {
 		world.transform.position = new Vector3 (world.transform.localPosition.x, offsetWorldY - scrollDistance, world.transform.localPosition.z);
 	}
 
-	private void changeLane(int newLane) {
+	private void changeLane(int newLane, bool reset) {
 		if (newLane < 0 || newLane >= trees.Length) {
 			return;
 		}
 		currLane = newLane;
-		playerBehaviour.jump(trees [currLane].transform.position.x);
+		if (reset) {
+			playerBehaviour.reset(trees [currLane].transform.position.x);
+		} else {
+			playerBehaviour.jump(trees [currLane].transform.position.x);
+		}
 	}
 
 	private void addScore(long newScore) {
@@ -259,14 +265,14 @@ public class GameController : MonoBehaviour {
 	// keyboard shortcut: LEFT ARROW
 	void swipeLeft() {
 		if (gameState == GameState.PLAY_CLIMB && playerBehaviour.state == PlayerState.CLIMB) {
-			changeLane (currLane - 1);
+			changeLane (currLane - 1, false);
 		}
 	}
 
 	// keyboard shortcut: RIGHT ARROW
 	void swipeRight() {
 		if (gameState == GameState.PLAY_CLIMB && playerBehaviour.state == PlayerState.CLIMB) {
-			changeLane (currLane + 1);
+			changeLane (currLane + 1, false);
 		}
 	}
 

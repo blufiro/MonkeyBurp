@@ -22,6 +22,7 @@ public class TileBehaviour : MonoBehaviour {
 	private int targetTileHeight;
 	private int tileHeight;
 	private TilePiece[] tiles;
+	private TilePiece[] originalOrderedTiles;
 	private Vector3 cachedTranslate;
 
 	// Use this for initialization
@@ -34,20 +35,24 @@ public class TileBehaviour : MonoBehaviour {
 		cachedTranslate = new Vector3 (0, tileHeight * repeat, 0);
 		Debug.Log("repeat: " + repeat + " screen height: " + Screen.height + " tile height: " + tileHeight);
 		tiles = new TilePiece[repeat];
+		originalOrderedTiles = new TilePiece[repeat];
 		for (int y=0; y<repeat; y++) {
 			GameObject newTile = (GameObject)Instantiate (tile);
 			newTile.name = "tree" + y;
 			newTile.transform.parent = this.transform;
 			newTile.transform.localPosition = tile.transform.localPosition + new Vector3(0, tileHeight * y, 0);
-			tiles[y] = new TilePiece(newTile);
+			originalOrderedTiles[y] = new TilePiece(newTile);
+			tiles[y] = originalOrderedTiles[y];
 		}
 		tile.SetActive(false);
 		onReset ();
 	}
 
 	public void onReset() {
-		foreach (TilePiece tile in tiles) {
+		for (int i=originalOrderedTiles.Length-1; i>=0; i--) {
+			TilePiece tile = originalOrderedTiles[i];
 			tile.reset();
+			tiles[i] = tile;
 		}
 	}
 	
