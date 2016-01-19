@@ -6,6 +6,7 @@ public class Global
 {
 	// climbing control variables
 	public float scrollSpeedPerSecond = 600;
+	public float scrollIncrement = 10;
 	public float swipeDeltaSqMagnitude= 10000*10000;
 	public float swipeMinDistance = 10000;
 	public float playerMoveAnimSeconds = 0.2f;

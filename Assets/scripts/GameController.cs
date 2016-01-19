@@ -21,6 +21,7 @@ public class GameController : MonoBehaviour {
 	private PlayerBehaviour playerBehaviour;
 	private long score = 0;
 	private TextMesh scoreText;
+	private long speedUpCount = 0;
 	
 	// Climbing Game
 	private float scrollDistance;
@@ -57,7 +58,7 @@ public class GameController : MonoBehaviour {
 		AnimMaster.get();
 		changeLane (Global.get().startingLane, true);
 	}
-	
+
 	// Update is called once per frame
 	void Update() {
 		if (isPaused) return;
@@ -65,8 +66,9 @@ public class GameController : MonoBehaviour {
 	}
 	
 	void OnGUI() {
-		GUILayout.BeginArea (new Rect (100,100,Screen.width-100,Screen.height));
-		GUILayout.Box ("spawnedGobPool: " + spawnedGobPool.getFreeCount() + " of " + spawnedGobPool.getTotalCount() + " used: "+ spawnedGobPool.getUsedCount());
+		GUILayout.BeginArea (new Rect (100,100,Screen.width-100,Screen.height-100));
+		// GUILayout.Box ("spawnedGobPool: " + spawnedGobPool.getFreeCount() + " of " + spawnedGobPool.getTotalCount() + " used: "+ spawnedGobPool.getUsedCount());
+		GUILayout.Box ("speedUpCount: " + speedUpCount);
 		GUILayout.EndArea();
 	}
 
@@ -235,6 +237,7 @@ public class GameController : MonoBehaviour {
 	private void resetScore() {
 		score = 0;
 		showScoreImmediate();
+		speedUpCount = 0;
 	}
 	
 	private void showScoreImmediate() {
@@ -321,6 +324,7 @@ public class GameController : MonoBehaviour {
 				AnimMaster.delay("score", gameObject, delay).onComplete("showBonus").onCompleteParams(bonus);
 				delay += 1f;
 			}
+			speedUp();
 		}
 		AnimMaster.delay("score", gameObject, delay).onComplete("showScoreImmediate");
 		Debug.Log("Bonuses: " + string.Join(",", Array.ConvertAll(bonuses.ToArray(), i => i.ToString())));
@@ -351,5 +355,10 @@ public class GameController : MonoBehaviour {
 	public void shuffleFruits() {
 		slotQueue.shuffleFruits ();
 		playerBlink();
+	}
+
+	public void speedUp() {
+		speedUpCount++;
+		Global.get().scrollSpeedPerSecond += Global.get().scrollIncrement;
 	}
 }
