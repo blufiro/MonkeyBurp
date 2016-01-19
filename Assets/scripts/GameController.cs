@@ -63,6 +63,12 @@ public class GameController : MonoBehaviour {
 		if (isPaused) return;
 		gameUpdate();
 	}
+	
+	void OnGUI() {
+		GUILayout.BeginArea (new Rect (100,100,Screen.width-100,Screen.height));
+		GUILayout.Box ("spawnedGobPool: " + spawnedGobPool.getFreeCount() + " of " + spawnedGobPool.getTotalCount() + " used: "+ spawnedGobPool.getUsedCount());
+		GUILayout.EndArea();
+	}
 
 	private void gameStart() {
 		gameState = GameState.PLAY_CLIMB;
@@ -130,7 +136,7 @@ public class GameController : MonoBehaviour {
 		for (int i=Global.get().fruitAndRottenFruitPoolCount; i>=0; i--) {
 			spawnRandomFruitOrRottenFruit();
 		}
-		spawnUntilScroll(false);
+		spawnUntilScroll();
 		Debug.Log("spawned " + spawnedGobPool.getUsedCount() + ", free " + spawnedGobPool.getFreeCount());
 		
 		// reset spawning distance
@@ -146,18 +152,15 @@ public class GameController : MonoBehaviour {
 		return (leftTree.transform.position + rightTree.transform.position) * 0.5f;
 	}
 	
-	private void spawnUntilScroll(bool shuffle) {
+	private void spawnUntilScroll() {
 		while(spawnedDistances[spawnedDistances.Length-1] + Global.get().treeObjectDistance < scrollDistance + Global.get().getGameScreenHeight() * 2) {
-			spawnNext(shuffle);
+			spawnNext();
 		}
 	}
 	
-	private void spawnNext(bool shuffle) {
+	private void spawnNext() {
 		int index = spawnNextIndex;
 		spawnNextIndex = (spawnNextIndex + 1) % spawnedDistances.Length;
-		if (shuffle) {
-			spawnedGobPool.shuffleFree(5);
-		}
 		IPoolObject spawnedGob = spawnedGobPool.use();
 		GameObject gob;
 		if (spawnedGob.GetType() == typeof(FruitBehaviour)) {
@@ -304,8 +307,8 @@ public class GameController : MonoBehaviour {
 	}
 	
 	public void returnFruit(FruitBehaviour fruit) {
-		spawnedGobPool.returnToPool(fruit);
-		spawnUntilScroll(true);
+		spawnedGobPool.returnToPoolRand(fruit);
+		spawnUntilScroll();
 	}
 	
 	public void cashedIn(int cashInScore, List<BonusType> bonuses) {

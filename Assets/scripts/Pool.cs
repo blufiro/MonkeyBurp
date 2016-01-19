@@ -53,6 +53,14 @@ public class Pool
 		toUse.poolUse();
 	}
 	
+	public void returnToPoolRand(IPoolObject toFree) {
+		returnToPool(toFree);
+		int count = getFreeCount();
+		if (count > 2) {
+			swapFree(count-1, (int) Random.Range(0, count-1));
+		}
+	}
+
 	public void returnToPool(IPoolObject toFree) {
 		freeList.Add(toFree);
 		pool[toFree] = State.FREE;
